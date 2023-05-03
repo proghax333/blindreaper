@@ -1,0 +1,19 @@
+{
+  "name": "miniproject2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "keywords": [],
+  "author": "proghax333",
+  "license": "ISC",
+  "dependencies": {
+    "@emotion-icons/material": "^3.14.0",
+    "react-router-dom": "^6.10.0"
+  }
+}

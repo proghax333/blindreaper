@@ -1,0 +1,14 @@
+html, body, #root {
+  height: 100%;
+}
+
+*::-webkit-scrollbar {
+  width: 0.45rem;
+}
+*::-webkit-scrollbar-track {
+  width: 0.7rem;
+}
+*::-webkit-scrollbar-thumb {
+  background: white;
+/*  border-radius: 24px;*/
+}
