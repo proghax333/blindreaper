@@ -2,64 +2,43 @@ import React from "react";
 
 import { Box, Flex, Divider, Text } from "@chakra-ui/react";
 
-import { AccountCircle, CheckCircle, Extension, NoteAdd, Code, ArrowDropDown, KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, CameraAlt } from "@emotion-icons/material";
-import { Settings, Notes, Note } from "@emotion-icons/material-outlined";
+import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add } from "@emotion-icons/material";
 
 import ActionBarButton from "~/ui/ActionBarButton";
+import { useSelector } from "react-redux";
 
-const collections = [
-  {
-    id: 1,
-    name: "vulnsite.site",
-    children: [
-      {
-        id: 101,
-        name: "blog.php"
-      },
-      {
-        id: 102,
-        name: "news.php"
-      },
-      {
-        id: 103,
-        name: "search.php",
-        children: [
-          {
-            id: 2222,
-            name: "munchingsites.web",
-            children: [
-              {
-                id: 20221,
-                name: "comments.php"
-              }
-            ]
-          }
-        ]
-      },
-    ]
-  },
-  {
-    id: 2,
-    name: "munchingsites.web",
-    children: [
-      {
-        id: 201,
-        name: "comments.php"
+export function useMemoSortedCollection(collections) {
+  return React.useMemo(() => {
+    const colls = collections;
+
+    if(!colls) {
+      return;
+    }
+
+    const result = [...colls];
+    result.sort((a, b) => {
+      if(a.children && b.children) {
+        return a.name.localeCompare(b.name);
+      } else if(a.children) {
+        return -1;
+      } else {
+        return 1;
       }
-    ]
-  },
-  {
-    id: 3,
-    name: "logiathing.web",
-    children: [
+    });
 
-    ]
-  }
-];
+    return result;
+  }, [collections]);
+}
 
-function TreeCollection({ node, level = 0 }) {
+function TreeCollection({ node: node_, level = 0 }) {
   const LEFT_ICON_SIZE = 18;
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const node = {
+    ...node_,
+  };
+  
+  const nodeChildren = useMemoSortedCollection(node.children);
 
   function handleToggle() {
     setIsOpen(state => !state);
@@ -67,7 +46,7 @@ function TreeCollection({ node, level = 0 }) {
 
   return <Box>
     <Flex
-      pl={`${4 + level * 12 + (node.children == undefined ? 0 : 0)}px`}
+      pl={`${4 + level * 12 + (nodeChildren == undefined ? 0 : 0)}px`}
       alignItems={"center"}
       py={1}
       cursor={"pointer"}
@@ -76,7 +55,7 @@ function TreeCollection({ node, level = 0 }) {
         background: "gray.800"
       }}
     >
-      {node.children
+      {nodeChildren
         ? isOpen
           ? <KeyboardArrowDown size={LEFT_ICON_SIZE} />
           : <ChevronRight size={LEFT_ICON_SIZE} />
@@ -86,9 +65,9 @@ function TreeCollection({ node, level = 0 }) {
     </Flex>
 
     {
-      isOpen && node.children &&
+      isOpen && nodeChildren &&
       <Box>
-        {node.children.map(child => {
+        {nodeChildren.map(child => {
           return <TreeCollection
             key={`tree-node-${child.id}`}
             level={level + 1}
@@ -101,6 +80,11 @@ function TreeCollection({ node, level = 0 }) {
 }
 
 export default function MainContent() {
+  const payloads = useSelector(state => state.payloads);
+  // const { collections } = payloads;
+  const collections = useMemoSortedCollection(payloads.collections);
+
+
   return <Flex
     w="full"
     h="full"
