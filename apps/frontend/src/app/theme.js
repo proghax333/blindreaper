@@ -29,6 +29,14 @@ const components = {
   //     textUnderlineOffset: 3
   //   })
   // }
+  Text: {
+    variants: {
+      'input-label': (props) => ({
+        fontSize: "sm",
+        fontWeight: "bold"
+      })
+    }
+  }
 }
 
 const fonts = {

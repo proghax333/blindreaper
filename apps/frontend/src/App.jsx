@@ -12,21 +12,27 @@ import SignUp from '~/pages/auth/signup';
 
 import { Dashboard } from "~/pages/dashboard/index";
 import DashboardIndex from '~/pages/dashboard/index';
-import Collections from '~/pages/dashboard/collections';
-import Captures from "~/pages/dashboard/captures";
+import Payloads from "~/pages/dashboard/payloads";
+import Settings from '~/pages/dashboard/settings';
+import ForgotPassword from '~/pages/forgot-password';
+import ResetPassword from '~/pages/reset-password';
 
 function RootRouter() {
   return <BrowserRouter>
     <Routes>
       <Route path="" element={<Index />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} /> 
+      <Route path="/reset-password" element={<ResetPassword />} /> 
+      
       <Route path="auth">
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUp />} />
       </Route>
+      
       <Route path="dashboard" element={<Dashboard />}>
         <Route path="" element={<DashboardIndex />} />
-        <Route path="captures" element={<Captures />} />
-        <Route path="collections" element={<Collections />} />
+        <Route path="payloads" element={<Payloads />} />
+        <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>
   </BrowserRouter>

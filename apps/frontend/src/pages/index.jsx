@@ -30,7 +30,7 @@ export default function Index() {
         <NavigationItem>Docs</NavigationItem>
         <NavigationItem>About us</NavigationItem>
         {/*<NavigationItem to="/auth/login">Login</NavigationItem>*/}
-        <NavigationItem to="/dashboard/captures">Dashboard</NavigationItem>
+        <NavigationItem to="/dashboard/payloads">Dashboard</NavigationItem>
       </Navigation>
     </Header>
 

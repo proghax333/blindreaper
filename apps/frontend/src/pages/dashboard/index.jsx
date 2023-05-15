@@ -43,17 +43,11 @@ export function Dashboard() {
           flex={1}
           overflowY={"auto"}
         >
-          <ActionBarButton h="12" minH="12" as={Link} to="/dashboard/captures">
-            <CameraAlt size={"18"} />
-          </ActionBarButton>
-          <ActionBarButton h="12" minH="12" as={Link} to="/dashboard/collections">
+          <ActionBarButton h="12" minH="12" as={Link} to="/dashboard/payloads">
             <Code size={"18"} />
           </ActionBarButton>
-          <ActionBarButton h="12" minH="12">
+          <ActionBarButton h="12" minH="12" as={Link} to="/dashboard/settings">
             <Settings size={"18"} />
-          </ActionBarButton>
-          <ActionBarButton h="12" minH="12">
-            <AccountCircle size={"18"} />
           </ActionBarButton>
         </Flex>
       </Flex>

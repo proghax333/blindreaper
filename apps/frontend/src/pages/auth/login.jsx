@@ -44,6 +44,16 @@ export default function Login() {
 
             <Button variant="solid">Sign In</Button>
             
+            <Text>
+              <Link
+                to={"/forgot-password"}
+                style={{
+                  textDecoration: "underline",
+                  color: "#007aff"
+                }}
+              >Forgot Password?</Link>
+            </Text>
+
             <Text color={"gray.300"}>
               Don't have an account? <Link
                 to="/auth/signup"

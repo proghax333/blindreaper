@@ -1,6 +1,6 @@
 
 import { Box, Button, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text } from "@chakra-ui/react";
-import { Close, Search } from "@emotion-icons/material";
+import { ArrowDropDown, Close, Search } from "@emotion-icons/material";
 import React from "react";
 
 function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
@@ -8,18 +8,35 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
 
   return <Flex
     borderWidth={1}
-    borderRadius={"md"}
+    // borderRadius={"md"}
     borderColor={"gray.700"}
     p={2}
     w={"full"}
-    _hover={{
-      background: "#181818"
-    }}
-    background={isActive ? "#181818" : "#121212"}
+    // _hover={{
+    //   background: "#181818"
+    // }}
+    background={isActive ? "#181818" : "#0c0c0c"}
     cursor={"pointer"}
     gap={2}
     flexWrap={"wrap"}
+    position="relative"
   >
+    <Button
+      position="absolute"
+      right={"0.4rem"}
+      top={"0.4rem"}
+      p={0}
+      border={"1px"}
+      borderColor={"gray.500"}
+      rounded="full"
+      minW={0}
+      w={7}
+      h={7}
+      alignItems={"center"}
+      justifyContent="center"
+    >
+      <ArrowDropDown style={{margin: 0}} size={24} />
+    </Button>
     <Image
       // alignSelf={"center"}
       src={screenshot}
@@ -41,7 +58,7 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
         fontWeight={"bold"}
         fontSize={"lg"}
         fontFamily={"Montserrat"}
-        onClick={() => handleCaptureItemClick(id)}
+        // onClick={() => handleCaptureItemClick(id)}
       >
         {title}
       </Text>
@@ -56,7 +73,7 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
         </Link>
       </Box>
 
-      <Box py={2} />
+      <Box py={1} />
       <Divider mt={"auto"} />
       <Text
         fontSize={"xs"}
@@ -116,7 +133,7 @@ function CaptureInfo({
   </Flex>
 }
 
-export default function Captures() {
+export default function Captures({ ...props }) {
   const captures = [
     {
       id: 101,
@@ -186,6 +203,8 @@ export default function Captures() {
     h="full"
     flexDir={"column"}
     w="full"
+
+    {...props}
   >
     <Flex
       alignItems="center"
@@ -236,8 +255,8 @@ export default function Captures() {
         </CapturesList>
       </Flex>
 
-      <Divider orientation="vertical" />
-
+      {/* <Divider orientation="vertical" /> */}
+{/* 
       <Flex
         flex={2}
         flexDirection={"column"}
@@ -247,7 +266,7 @@ export default function Captures() {
           data={selectedCapture}
           onClose={handleClose}
         />}
-      </Flex>
+      </Flex> */}
     </Flex>
   </Flex>
 }

@@ -7,7 +7,9 @@ import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add } from "@emotion-
 import ActionBarButton from "~/ui/ActionBarButton";
 import { useSelector } from "react-redux";
 
-export function useMemoSortedCollection(collections) {
+import Captures from "~/modules/payloads/components/captures";
+
+function useMemoSortedCollection(collections) {
   return React.useMemo(() => {
     const colls = collections;
 
@@ -44,6 +46,12 @@ function TreeCollection({ node: node_, level = 0 }) {
     setIsOpen(state => !state);
   }
 
+  const IconComponent = nodeChildren
+    ? isOpen
+      ? KeyboardArrowDown
+      : ChevronRight
+    : InsertDriveFile;
+
   return <Box>
     <Flex
       pl={`${4 + level * 12 + (nodeChildren == undefined ? 0 : 0)}px`}
@@ -55,12 +63,7 @@ function TreeCollection({ node: node_, level = 0 }) {
         background: "gray.800"
       }}
     >
-      {nodeChildren
-        ? isOpen
-          ? <KeyboardArrowDown size={LEFT_ICON_SIZE} />
-          : <ChevronRight size={LEFT_ICON_SIZE} />
-        : <InsertDriveFile size={LEFT_ICON_SIZE} />
-      }
+      <IconComponent size={LEFT_ICON_SIZE} style={{minWidth: LEFT_ICON_SIZE}} />
       <Text px={1}>{node.name}</Text>
     </Flex>
 
@@ -91,21 +94,10 @@ export default function MainContent() {
     background="blackAlpha.700"
   >
     <Box
-      w="14rem"
+      w={{base:"10rem", md: "14rem"}}
+      minW={{base:"10rem", md: "14rem"}}
       h="full"
       background="gray.900"
-      // css={{
-      //   '&::-webkit-scrollbar': {
-      //     width: '4px',
-      //   },
-      //   '&::-webkit-scrollbar-track': {
-      //     width: '6px',
-      //   },
-      //   '&::-webkit-scrollbar-thumb': {
-      //     background: "white",
-      //     borderRadius: '24px',
-      //   },
-      // }}
     >
       {/* Tree browser */}
       <Flex
@@ -126,6 +118,7 @@ export default function MainContent() {
           fontSize="sm"
           flex={1}
           overflowY="auto"
+          overflowX="auto"
         >
           {collections.map(node => {
             return <TreeCollection
@@ -137,7 +130,14 @@ export default function MainContent() {
         </Box>
       </Flex>
     </Box>
-
     <Divider orientation="vertical" />
+
+    <Box
+      flex={1}
+      background="#080808"
+      h="full"
+    >
+      <Captures />
+    </Box>
   </Flex>
 }
