@@ -11,9 +11,5 @@
   ],
   "keywords": [],
   "author": "proghax333",
-  "license": "ISC",
-  "dependencies": {
-    "@emotion-icons/material": "^3.14.0",
-    "react-router-dom": "^6.10.0"
-  }
+  "license": "ISC"
 }

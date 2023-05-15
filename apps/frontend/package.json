@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.6.0",
+    "@emotion-icons/material": "^3.14.0",
     "@emotion-icons/material-outlined": "^3.14.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -19,7 +20,8 @@
     "framer-motion": "^10.12.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.0.5"
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.11.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
