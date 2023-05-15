@@ -36,6 +36,13 @@ const components = {
         fontWeight: "bold"
       })
     }
+  },
+  Heading: {
+    variants: {
+      'small': {
+        fontSize: "xl"
+      }
+    }
   }
 }
 
