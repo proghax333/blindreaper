@@ -94,6 +94,8 @@ export function createContainer() {
         initialized,
         async init() {
           this.instance = await factory(registry, this);
+          console.log(`[ Loaded ] ${this.name}`);
+
           if(this.onInit) {
             this.onInit();
           }
