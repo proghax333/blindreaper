@@ -7,10 +7,12 @@ import dotenv from "dotenv";
 
 import AuthController from "./modules/auth/controllers/auth.controller.js";
 
-import HttpError from "./lib/http-errors.js";
+import { HttpError } from "./lib/http.js";
 
 import passport from "passport";
-import { ironSession } from "iron-session/express";
+// import { ironSession } from "iron-session/express";
+import { ironSession } from "./lib/iron-session.js";
+import cors from "cors";
 
 // import mongoose, { Schema, Model } from "mongoose";
 
@@ -18,6 +20,10 @@ import { db } from "./modules/db/index.js";
 
 async function main() {
   const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   /* Initialize services */
   const factories = [
@@ -60,17 +66,34 @@ async function main() {
       name: "session",
       factory: async (modules) => {
         const app = modules.app.instance;
-        
-        const sessionConfig = {
+
+        const session = ironSession({
           cookieName: "br_session",
           password: process.env.SECRET_COOKIE_PASSWORD || "this is just some development cookie password",
           cookieOptions: {
             secure: process.env.NODE_ENV === "production",
           },
-        };
-
-        const session = ironSession(sessionConfig);
+        });
         app.use(session);
+        app.use((req, res, next) => {
+          const session = req.session;
+
+          req.session = {};
+          req.session.regenerate = (fn) => {
+            fn();
+          }
+          req.session.save = function(cb) {
+            session.save()
+              .then(cb)
+              .catch(cb);
+          };
+          req.session.destroy = function(cb) {
+            session.destroy();
+            cb();
+          };
+
+          next();
+        });
 
         return session;
       },
@@ -99,7 +122,7 @@ async function main() {
     },
     {
       name: "AuthController",
-      dependencies: ["passport"],
+      dependencies: ["passport", "db"],
       factory: AuthController
     },
   ];
@@ -115,7 +138,6 @@ async function main() {
     })
   });
 
-
   // Error 404 handler
   app.use((req, res, next) => {
     return res.json(HttpError(404, "Not found."));
@@ -126,6 +148,8 @@ async function main() {
     if(!err) {
       err = HttpError(500, "Something went wrong.");
     }
+
+    console.log(err);
 
     return res.json(err);
   });

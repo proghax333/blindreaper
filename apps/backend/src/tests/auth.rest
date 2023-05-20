@@ -1,9 +1,37 @@
+### 
+POST http://localhost:5001/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@test.test",
+  "name": "Test User",
+  "password": "somepassword"
+}
+
+
+###
+
+
 GET http://localhost:5001/auth/
 
 ###
 
+
 POST http://localhost:5001/auth/login
+Content-Type: application/json
+
+{
+  "login": "test@test.test",
+  "password": "somepassword"
+}
+
+###
+
+
+
+GET http://localhost:5001/auth/logout
 
 
 ###
 POST http://localhost:5001/test
+

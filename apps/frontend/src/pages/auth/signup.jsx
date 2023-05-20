@@ -33,7 +33,12 @@ export default function SignUp() {
             gap={4}
           >
             <InputGroup flexDirection={"column"}>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>E-mail</FormLabel>
+              <Input variant="filled" />
+            </InputGroup>
+
+            <InputGroup flexDirection={"column"}>
+              <FormLabel>Name</FormLabel>
               <Input variant="filled" />
             </InputGroup>
             
