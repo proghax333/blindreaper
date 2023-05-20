@@ -1,5 +1,5 @@
 
-export default async function ProfilesController({  }) {
+export default async function AccountController({  }) {
   
   return {
     "/": async (req, res, next) => {

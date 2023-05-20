@@ -1,7 +1,7 @@
 
 import LocalStrategy from "passport-local";
 import { HttpError, HttpData, HttpResponse, handleError } from "../../../lib/http.js";
-import { Account } from "../../profiles/models/account.model.js";
+import { Account } from "../../account/models/account.model.js";
 import { AUTH_TYPE, Auth } from "../models/auth.model.js";
 
 import crypto from "crypto";

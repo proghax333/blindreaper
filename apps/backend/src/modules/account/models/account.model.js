@@ -1,5 +1,5 @@
 
-import { db } from "../../../modules/db/index.js";
+import { db } from "../../db/index.js";
 import { Schema } from "mongoose";
 
 const accountSchema = new Schema({
