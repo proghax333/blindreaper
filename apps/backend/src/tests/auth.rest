@@ -3,8 +3,8 @@ POST http://localhost:5001/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@test.test",
-  "name": "Test User",
+  "email": "test@tewt.cwetweom",
+  "name": "Atmanand Nagpure",
   "password": "somepassword"
 }
 
@@ -21,8 +21,8 @@ POST http://localhost:5001/auth/login
 Content-Type: application/json
 
 {
-  "login": "test@test.test",
-  "password": "somepassword"
+  "login": "atmanandacademics@gmail.com",
+  "password": "changedpass"
 }
 
 ###
@@ -35,3 +35,23 @@ GET http://localhost:5001/auth/logout
 ###
 POST http://localhost:5001/test
 
+###
+
+POST http://localhost:5001/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "atmanandacademics@gmail.com"
+}
+
+
+###
+
+POST http://localhost:5001/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "atmanandacademics@gmail.com",
+  "code": "ac6e19fcbb916a7e3ee7883603f6a1ed5da841794c1ca87d43a98987b5a98d07",
+  "password": "changedpass"
+}

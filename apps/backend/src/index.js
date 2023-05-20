@@ -13,6 +13,7 @@ import passport from "passport";
 // import { ironSession } from "iron-session/express";
 import { ironSession } from "./lib/iron-session.js";
 import cors from "cors";
+import nodemailer from "nodemailer";
 
 // import mongoose, { Schema, Model } from "mongoose";
 
@@ -43,6 +44,7 @@ async function main() {
     // Database connection
     {
       name: "db",
+      dependencies: ["env"],
       factory: async ({ env }) => {
         env = env.instance;
 
@@ -50,6 +52,43 @@ async function main() {
         const connection = await db.openUri(uri);
 
         return connection;
+      }
+    },
+
+    {
+      name: "mail",
+      dependencies: ["env"],
+      factory: async ({ env }) => {
+        env = env.instance;
+
+        const mailer = nodemailer.createTransport({
+          service: "gmail",
+          host: "smtp.gmail.com",
+          auth: {
+            user: env.MAIL_USERNAME,
+            pass: env.MAIL_PASSWORD,
+          },
+        });
+        
+        // return mailer;
+
+        return {
+          sendMail(options) {
+            return new Promise((resolve, reject) => {
+              mailer.sendMail(options, (err, data) => {
+                if(err) {
+                  reject(err);
+                } else {
+                  resolve(data);
+                }
+              });
+            });
+          }
+        };
+
+        // return {
+        //   sendMail
+        // }
       }
     },
 
@@ -148,10 +187,8 @@ async function main() {
     if(!err) {
       err = HttpError(500, "Something went wrong.");
     }
-
-    console.log(err);
-
-    return res.json(err);
+    
+    return res.status(err.error.code).json(err);
   });
 
 

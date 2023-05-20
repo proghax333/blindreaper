@@ -17,7 +17,10 @@ const authSchema = new Schema({
   },
   data: {
     type: Object
-  }
+  },
+  reset_code: {
+    type: String,
+  },
 });
 
 export const Auth = db.model("Auth", authSchema);

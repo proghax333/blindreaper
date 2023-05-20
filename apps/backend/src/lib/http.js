@@ -92,3 +92,11 @@ export function HttpResponse(data, error, extras = {}) {
 
   return result;
 }
+
+export function handleError(next, e, message = "Something went wrong.") {
+  if(typeof e === "object" && e?.error?.code) {
+    next(e);
+  } else {
+    next(HttpError(message));
+  }
+}
