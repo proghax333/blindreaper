@@ -149,6 +149,9 @@ export default function AuthController({ passport, db, mail }) {
 
         // return res.json({});
         req.login(user, (err) => {
+          console.log("Login error: ", err);
+          console.log("Session: ", JSON.stringify(req.session));
+
           return res.json(HttpData({
             items: [{
               domain: "auth",

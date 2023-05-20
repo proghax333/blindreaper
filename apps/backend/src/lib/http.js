@@ -97,6 +97,6 @@ export function handleError(next, e, message = "Something went wrong.") {
   if(typeof e === "object" && e?.error?.code) {
     next(e);
   } else {
-    next(HttpError(message));
+    next(HttpError(500, message));
   }
 }

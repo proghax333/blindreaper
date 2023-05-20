@@ -18,6 +18,8 @@ import nodemailer from "nodemailer";
 // import mongoose, { Schema, Model } from "mongoose";
 
 import { db } from "./modules/db/index.js";
+import AccountRouterFactory from "./modules/account/account.routes.js";
+import AccountController from "./modules/account/controllers/account.controller.js";
 
 async function main() {
   const app = express();
@@ -85,10 +87,6 @@ async function main() {
             });
           }
         };
-
-        // return {
-        //   sendMail
-        // }
       }
     },
 
@@ -113,21 +111,43 @@ async function main() {
             secure: process.env.NODE_ENV === "production",
           },
         });
+        app.use((req, res, next) => {
+          next();
+        })
         app.use(session);
         app.use((req, res, next) => {
-          const session = req.session;
+          const sess = req.session;
 
-          req.session = {};
+          req.session = {
+            ...sess,
+          };
           req.session.regenerate = (fn) => {
             fn();
           }
           req.session.save = function(cb) {
-            session.save()
+            const {save, destroy, ...value} = req.session;
+
+            const keys = Object.keys(value);
+            const currentKeys = Object.keys(sess);
+
+            currentKeys.forEach((key) => {
+              if (!keys.includes(key)) {
+                // @ts-ignore See comment in IronSessionData interface
+                delete sess[key];
+              }
+            });
+
+            keys.forEach((key) => {
+              // @ts-ignore See comment in IronSessionData interface
+              sess[key] = value[key];
+            });
+
+            sess.save()
               .then(cb)
               .catch(cb);
           };
           req.session.destroy = function(cb) {
-            session.destroy();
+            sess.destroy();
             cb();
           };
 
@@ -156,13 +176,25 @@ async function main() {
     // Auth module
     {
       name: "AuthRouter",
-      factory: AuthRouterFactory,
       dependencies: ["app", "AuthController"],
+      factory: AuthRouterFactory,
     },
     {
       name: "AuthController",
       dependencies: ["passport", "db"],
       factory: AuthController
+    },
+
+    // Account module
+    {
+      name: "AccountRouter",
+      dependencies: ["app", "AccountController"],
+      factory: AccountRouterFactory,
+    },
+    {
+      name: "AccountController",
+      dependencies: ["passport", "db"],
+      factory: AccountController
     },
   ];
   const container = createContainer();
@@ -188,7 +220,7 @@ async function main() {
       err = HttpError(500, "Something went wrong.");
     }
     
-    return res.status(err.error.code).json(err);
+    return res.status(err?.error?.code || 500).json(err);
   });
 
 

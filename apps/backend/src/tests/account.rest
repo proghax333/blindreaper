@@ -1,0 +1,16 @@
+
+###
+
+GET http://localhost:5001/account
+Cookie: br_session=Fe26.2*1*0505739b46816e04f8fac2ae2797479a06a575fc7b9f940cb7e7683e0d228651*TBXI0xwpwBYFtIUa_kqQYg*J7aK0MIPTrayWO_1W2BrqkeqOvq35EnrjjnwwCoS_ct5Mn91nm1Tt4CukaNHoDCg4eJ5tVhd7Y7WxdaC4i0yjw*1685880877605*df6e8ab33b8c7b4bee2012ac1c14c6bbc7dfc4b44bd19b42b85581559103786f*SfzQLjKQ4r-Zz6a4h5nWg2D1l4Ae_jXdRDNZ3eXxGuk~2;
+
+###
+
+POST http://localhost:5001/account/update-details
+Content-Type: application/json
+
+{
+  "name": "Atmanand N",
+  "description": "Simple account",
+  "key": ""
+}
