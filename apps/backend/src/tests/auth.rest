@@ -52,6 +52,6 @@ Content-Type: application/json
 
 {
   "email": "atmanandacademics@gmail.com",
-  "code": "ac6e19fcbb916a7e3ee7883603f6a1ed5da841794c1ca87d43a98987b5a98d07",
+  "code": "7efefbb608d35081956e6b6c3d4e25687316d4632b22d8965f3a54ae24e80358",
   "password": "changedpass"
 }
