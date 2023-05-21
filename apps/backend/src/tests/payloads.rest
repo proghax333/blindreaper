@@ -1,0 +1,54 @@
+###
+
+GET http://localhost:5001/payloads
+
+###
+
+POST http://localhost:5001/payloads
+Content-Type: application/json
+
+{
+  "name": "Generic Payload",
+  "parent_id": "646785a5d8fd0e6ffbe01e05"
+}
+
+###
+
+PUT http://localhost:5001/payloads/6469beb7012075e42620760a
+Content-Type: application/json
+
+{
+  "name": "Sample Payload"
+}
+
+###
+
+DELETE http://localhost:5001/payloads/6469c01e3356148e9be6a70d
+
+###
+
+GET http://localhost:5001/payloads/6469beb7012075e42620760a/captures
+
+
+###
+
+
+POST http://localhost:5001/payloads/6469beb7012075e42620760a/captures
+Content-Type: application/json
+
+{
+  "data": {
+    "title": "This is a webpage."
+  }
+}
+
+
+###
+
+GET http://localhost:5001/payloads/captures/6469d0a996b26c2640be7770
+
+
+###
+
+
+DELETE http://localhost:5001/payloads/captures/6469cf8c2f7f6fed9e6ad5b5

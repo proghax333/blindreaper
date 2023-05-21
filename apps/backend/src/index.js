@@ -1,11 +1,8 @@
 
 import { createContainer } from "./lib/di.js";
-import AuthRouterFactory from "./modules/auth/auth.routes.js";
 
 import express from "express";
 import dotenv from "dotenv";
-
-import AuthController from "./modules/auth/controllers/auth.controller.js";
 
 import { HttpError } from "./lib/http.js";
 
@@ -18,8 +15,15 @@ import nodemailer from "nodemailer";
 // import mongoose, { Schema, Model } from "mongoose";
 
 import { db } from "./modules/db/index.js";
+
+import AuthRouterFactory from "./modules/auth/auth.routes.js";
+import AuthController from "./modules/auth/controllers/auth.controller.js";
+
 import AccountRouterFactory from "./modules/account/account.routes.js";
 import AccountController from "./modules/account/controllers/account.controller.js";
+
+import PayloadsRouterFactory from "./modules/payloads/payloads.routes.js";
+import PayloadsController from "./modules/payloads/controllers/payloads.controller.js";
 
 async function main() {
   const app = express();
@@ -195,6 +199,18 @@ async function main() {
       name: "AccountController",
       dependencies: ["passport", "db"],
       factory: AccountController
+    },
+
+    // Payload module
+    {
+      name: "PayloadsRouter",
+      dependencies: ["app", "PayloadsController"],
+      factory: PayloadsRouterFactory,
+    },
+    {
+      name: "PayloadsController",
+      dependencies: ["passport", "db"],
+      factory: PayloadsController
     },
   ];
   const container = createContainer();

@@ -1,6 +1,8 @@
 
 import { Schema } from "mongoose";
-import { db } from "../../../modules/db/index.js";
+import { db } from "../../db/index.js";
+
+import { paginatorPlugin } from "../../../lib/mongoose-utils.js";
 
 const payloadSchema = new Schema({
   name: {
@@ -15,5 +17,7 @@ const payloadSchema = new Schema({
     ref: "Payload"
   }
 });
+
+payloadSchema.plugin(paginatorPlugin);
 
 export const Payload = db.model("Payload", payloadSchema);
