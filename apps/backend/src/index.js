@@ -4,6 +4,9 @@ import { createContainer } from "./lib/di.js";
 import express from "express";
 import dotenv from "dotenv";
 
+import path from "node:path";
+import fs from "node:fs/promises";
+
 import { HttpError } from "./lib/http.js";
 
 import passport from "passport";
@@ -24,6 +27,7 @@ import AccountController from "./modules/account/controllers/account.controller.
 
 import PayloadsRouterFactory from "./modules/payloads/payloads.routes.js";
 import PayloadsController from "./modules/payloads/controllers/payloads.controller.js";
+import ScriptController from "./modules/payloads/controllers/script.controller.js";
 
 async function main() {
   const app = express();
@@ -203,14 +207,40 @@ async function main() {
 
     // Payload module
     {
+      name: "PayloadScript",
+      dependencies: [],
+      factory: async () => {
+        const scriptPath = path.resolve("./src/assets/payload.js");
+        const scriptTemplate = await fs.readFile(scriptPath)
+          .then(buffer => buffer.toString("utf-8"));
+
+        function generateScript(agentUrl) {
+          return scriptTemplate.replace("{{ exf_url }}", agentUrl);
+        }
+
+        return {
+          generateScript
+        };
+      }
+    },
+    {
       name: "PayloadsRouter",
-      dependencies: ["app", "PayloadsController"],
+      dependencies: [
+        "app",
+        "PayloadsController",
+        "ScriptController"
+      ],
       factory: PayloadsRouterFactory,
     },
     {
       name: "PayloadsController",
       dependencies: ["passport", "db"],
       factory: PayloadsController
+    },
+    {
+      name: "ScriptController",
+      dependencies: ["PayloadScript"],
+      factory: ScriptController
     },
   ];
   const container = createContainer();

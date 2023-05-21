@@ -6,10 +6,11 @@ import { AUTH_TYPE, Auth } from "../models/auth.model.js";
 
 import crypto from "crypto";
 
-export default function AuthController({ passport, db, mail }) {
+export default function AuthController({ env, passport, db, mail }) {
   passport = passport.instance;
   db = db.instance;
   mail = mail.instance;
+  env = env.instance;
 
   passport.use("local", new LocalStrategy(
     {
@@ -212,7 +213,7 @@ export default function AuthController({ passport, db, mail }) {
           }
         );
         
-        const link = `http://localhost:5173/reset-password?code=${code}`;
+        const link = `${env.WEB_BASE_URL}/reset-password?code=${code}`;
 
         for(let i = 0; i < 3; ++i) {
           try {

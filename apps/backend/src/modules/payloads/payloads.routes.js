@@ -1,9 +1,16 @@
 
 import { Router } from "express";
 
-export default function PayloadsRouterFactory({ app, PayloadsController }) {
+export default function PayloadsRouterFactory(
+  {
+    app,
+    PayloadsController,
+    ScriptController,
+  }
+) {
   app = app.instance;
   PayloadsController = PayloadsController.instance;
+  ScriptController = ScriptController.instance;
 
   const payloadsRouter = Router();
 
@@ -19,6 +26,13 @@ export default function PayloadsRouterFactory({ app, PayloadsController }) {
     .delete("/captures/:id", ...PayloadsController["/delete_capture"])
 
   app.use("/payloads", payloadsRouter);
+
+  
+  const scriptRouter = Router();
+  scriptRouter
+    .get("/:id", ...ScriptController["/get-capture-script"]);
+
+  app.use("/use", scriptRouter);
 
   return payloadsRouter;
 }
