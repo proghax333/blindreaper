@@ -9,7 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { api, filterErrors, filterItems, handleErrors } from "~/lib/http";
-import { reject, wait } from "~/lib/utils";
+import { wait } from "~/lib/utils";
 
 const loginSchema = z.object({
   login: z.string().nonempty("Login must not be empty."),
