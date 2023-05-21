@@ -17,7 +17,7 @@ export default async function PayloadsController({  }) {
         limit = limit || 100000;
 
         const query = {
-          // owner_id: req.user.id,
+          owner_id: req.user.id,
         };
         const options = {
           page,
