@@ -139,19 +139,22 @@ export default function AuthController({ env, passport, db, mail }) {
 
     "/login": async (req, res, next) => {
       passport.authenticate('local', function(err, user, info, status) {
+        // console.log({
+        //   err,
+        //   user,
+        //   info,
+        //   status
+        // });
         if (err) {
-          console.log(err);
           return next(err);
         }
         if (!user) {
           return next(HttpError(500, "Could not login."));
         }
 
-
-        // return res.json({});
         req.login(user, (err) => {
-          console.log("Login error: ", err);
-          console.log("Session: ", JSON.stringify(req.session));
+          // console.log("Login error: ", err);
+          // console.log("Session: ", JSON.stringify(req.session));
 
           return res.json(HttpData({
             items: [{

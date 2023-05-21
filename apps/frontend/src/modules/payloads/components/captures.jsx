@@ -3,9 +3,9 @@ import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, In
 import { ArrowDropDown, ArrowDropUp, Close, Search } from "@emotion-icons/material";
 import React from "react";
 
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+// import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
   const { id, site, screenshot, title, time } = data;
@@ -107,8 +107,14 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
 
           <Image src={screenshot} />
         </InfoItem>
+      </Flex>
+    </>}
+  </Flex>;
+}
+
+/*
         <InfoItem>
-          <Heading variant="small">Target URL</Heading>
+          <Heading variant="small">Location</Heading>
           <Divider my={1}/>
 
           <Code w="full" p={2}>https://www.google.com</Code>
@@ -124,12 +130,6 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
           <Divider my={1}/>
 
           <Code w="full" p={2}>BASESESSID=123123;</Code>
-        </InfoItem>
-        <InfoItem>
-          <Heading variant="small">Referrer</Heading>
-          <Divider my={1}/>
-
-          <Code w="full" p={2}>&nbsp;</Code>
         </InfoItem>
         <InfoItem
           // bg="pink.200"
@@ -162,15 +162,12 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
           </Flex>
         </InfoItem>
         <InfoItem>
-          <Heading variant="small">Time executed</Heading>
+          <Heading variant="small">Browser Time</Heading>
           <Divider my={1}/>
 
           <Code w="full" p={2}>{time.toString()}</Code>
         </InfoItem>
-      </Flex>
-    </>}
-  </Flex>;
-}
+*/
 
 function InfoItem({ ...props }) {
   return <Box

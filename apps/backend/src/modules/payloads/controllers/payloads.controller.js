@@ -32,7 +32,7 @@ export default async function PayloadsController({  }) {
             items: [
               {
                 domain: "meta",
-                ...meta,
+                data: meta,
               },
               {
                 domain: "payload",
@@ -104,12 +104,14 @@ export default async function PayloadsController({  }) {
               items: [{
                 domain: "payload",
                 message: "Payload was updated successfully.",
-                id: result._id,
+                data: {
+                  id: result._id
+                },
               }]
             }));
           }
         } catch (e) {
-          console.log(e);
+          // console.log(e);
         }
 
         return next(HttpError(500, "Could not update the payload."));
@@ -174,7 +176,7 @@ export default async function PayloadsController({  }) {
             items: [
               {
                 domain: "meta",
-                ...meta,
+                data: meta,
               },
               {
                 domain: "payload",
@@ -240,12 +242,13 @@ export default async function PayloadsController({  }) {
           }
 
           if(!payload.owner_id.equals(req.user.id)) {
-            return next(HttpError(403, "Not authorized to delete the capture."));
+            return next(HttpError(403, "Not authorized to get the capture."));
           }
 
           return res.json(HttpData({
             items: [{
               domain: "capture",
+              message: "Capture retrived successfully.",
               data: {
                 payload_id: capture.payload_id,
                 data: capture.data,

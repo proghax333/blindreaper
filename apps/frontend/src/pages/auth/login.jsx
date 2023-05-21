@@ -1,10 +1,55 @@
-import { Box, Button, Flex, FormLabel, Heading, Input, InputGroup, Text } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, Text } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "~/ui/Header";
 import HeadingLogo from "~/ui/HeadingLogo";
 import TwoColsLayout from "~/ui/layouts/two-cols";
 
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { api, filterErrors, filterItems, handleErrors } from "~/lib/http";
+import { reject, wait } from "~/lib/utils";
+
+const loginSchema = z.object({
+  login: z.string().nonempty("Login must not be empty."),
+  password: z.string().nonempty("Password must not be empty."),
+});
+
+function useLoginMutation(options = {}) {
+  const mutation = useMutation({
+    mutationFn: ({ login, password }) => api
+      .post("/auth/login", {
+        login,
+        password
+      })
+      .then(res => res.data)
+      .then(filterItems("auth"))
+      .catch(handleErrors(filterErrors("auth"))),
+    ...options,
+  });
+
+  return mutation;
+}
+
 export default function Login() {
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(loginSchema)
+  });
+  const loginMutation = useLoginMutation({
+    onSuccess: () => {
+      wait(1000)
+        .then(() => navigate("/dashboard"));
+    }
+  });
+
+  async function onSubmit(data) {
+    loginMutation.mutate(data);
+  }
+
+  console.log(loginMutation.data);
+
   return <Box minHeight={"100vh"}>
     <Header>
       <HeadingLogo />
@@ -26,23 +71,40 @@ export default function Login() {
           </Heading>
         </Box>
 
-        <form>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Flex
             p={2}
             flexDirection={"column"}
             gap={4}
           >
-            <InputGroup flexDirection={"column"}>
-              <FormLabel>Username</FormLabel>
-              <Input variant="filled" />
-            </InputGroup>
-            
-            <InputGroup flexDirection={"column"}>
-              <FormLabel>Password</FormLabel>
-              <Input variant="filled" />
-            </InputGroup>
+            {loginMutation.error &&
+              <Alert status='error'>
+                <AlertIcon />
+                <AlertTitle>Login Failed!</AlertTitle>
+                <AlertDescription>{loginMutation.error.error.message}</AlertDescription>
+              </Alert>
+            }
+            {loginMutation.isSuccess &&
+              <Alert status='success'>
+                <AlertIcon />
+                <AlertTitle>Login Successful!</AlertTitle>
+                <AlertDescription>{loginMutation.data.data.items[0].message}</AlertDescription>
+              </Alert>
+            }
 
-            <Button variant="solid">Sign In</Button>
+            <FormControl isInvalid={errors.login}>
+              <FormLabel>Username</FormLabel>
+              <Input {...register("login")} variant="filled" />
+              {errors.login && <FormErrorMessage>{errors.login.message}</FormErrorMessage>}
+            </FormControl>
+            
+            <FormControl isInvalid={errors.password}>
+              <FormLabel>Password</FormLabel>
+              <Input {...register("password")} type="password" variant="filled" />
+              {errors.password && <FormErrorMessage>{errors.password.message}</FormErrorMessage>}
+            </FormControl>
+
+            <Button type="submit" variant="solid">Sign In</Button>
             
             <Text>
               <Link

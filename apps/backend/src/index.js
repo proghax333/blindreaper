@@ -32,7 +32,14 @@ import ScriptController from "./modules/payloads/controllers/script.controller.j
 async function main() {
   const app = express();
 
-  app.use(cors());
+  const corsOptions = {
+    origin: function (origin, callback) {
+      callback(null, origin);
+    },
+    credentials: true,
+  }
+
+  app.use(cors(corsOptions));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
@@ -257,7 +264,7 @@ async function main() {
 
   // Error 404 handler
   app.use((req, res, next) => {
-    return res.json(HttpError(404, "Not found."));
+    return res.status(404).json(HttpError(404, "Not found."));
   });
 
   // Error handler

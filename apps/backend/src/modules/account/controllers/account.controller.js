@@ -16,7 +16,7 @@ export default async function AccountController({ }) {
                 domain: "account",
                 message: "Data retrieved successfully.",
 
-                account: {
+                data: {
                   id: account._id,
                   name: account.name,
                   description: account.description,
@@ -27,7 +27,7 @@ export default async function AccountController({ }) {
             return next(HttpError());
           }
         } catch (e) {
-          console.log(e);
+          // console.log(e);
           handleError(next, e, "Could not retrieve account details.");
         }
       }
