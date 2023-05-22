@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { api, filterErrors, filterItems, handleErrors } from "~/lib/http";
+import { api, filterErrors, filterItems, handleErrors, handleSuccess } from "~/lib/http";
 import { wait } from "~/lib/utils";
 
 const loginSchema = z.object({
@@ -23,10 +23,9 @@ function useLoginMutation(options = {}) {
         login,
         password
       })
-      .then(res => res.data)
-      .then(filterItems("auth"))
-      .catch(handleErrors(filterErrors("auth"))),
-    ...options,
+      .then(handleSuccess("auth"))
+      .catch(handleErrors("auth"))
+    , ...options,
   });
 
   return mutation;
@@ -47,8 +46,6 @@ export default function Login() {
   async function onSubmit(data) {
     loginMutation.mutate(data);
   }
-
-  console.log(loginMutation.data);
 
   return <Box minHeight={"100vh"}>
     <Header>

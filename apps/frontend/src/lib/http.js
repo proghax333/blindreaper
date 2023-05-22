@@ -27,6 +27,14 @@ export const filterItems = domain =>
 export const filterErrors = domain =>
   filterDomain("errors", domain);
 
-export const handleErrors = fn => async value => {
-  return reject(await fn(value.response.data));
-}
+export const handleSuccess = domain => async value => {
+  const result = await filterItems(domain)(value.data.data);
+  value.data.data = result;
+  return value.data;
+};
+
+export const handleErrors = domain => async value => {
+  const result = await filterErrors(domain)(value.response.data.error);
+  value.response.data.error = result;
+  return reject(value.response.data);
+};

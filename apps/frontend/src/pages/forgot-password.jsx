@@ -1,12 +1,41 @@
 
 import React from "react";
 
-import { Box, Flex, Text, Heading, Button, Input } from "@chakra-ui/react";
+import { Box, Flex, Text, Heading, Button, Input, FormLabel } from "@chakra-ui/react";
 import Header from "~/ui/Header";
 import HeadingLogo from "~/ui/HeadingLogo";
 import { Link } from "react-router-dom";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { api, filterErrors, handleErrors, handleSuccess } from "~/lib/http";
+
+const forgotPasswordSchema = z.object({
+  email: z.string()
+    .nonempty("Email address must not be empty.")
+    // .email("Email address should valid.")
+});
+
+const useForgotPasswordMutation = () => {
+  return useMutation({
+    mutationFn: ({ email }) => {
+      return api.post("/auth/forgot-password", { email })
+        .then(res => res.data)
+        .then(handleSuccess("auth"))
+        .catch(handleErrors("auth"))
+    }
+  });
+}
 
 export default function ForgotPassword() {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(forgotPasswordSchema)
+  });
+  
+
+  const onSubmit = (data) => {
+    
+  };
+
   return <Box>
     <Header>
       <HeadingLogo />
@@ -21,24 +50,26 @@ export default function ForgotPassword() {
       <Box maxW={96} w="full">
         <Heading>Forgot Password</Heading>
 
-        <Flex my={2} py={2} flexDirection={"column"} gap={2}>
-          <Box w="full">
-            <Text>Enter your username/email</Text>
-            <Input type="text" w="full" />
-          </Box>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Flex my={2} py={2} flexDirection={"column"} gap={2}>
+            <Box w="full">
+              <FormLabel>Enter your email</FormLabel>
+              <Input {...register("email")} type="text" w="full" />
+            </Box>
 
-          <Button>Send me a reset link</Button>
+            <Button>Send me a reset link</Button>
 
-          <Text>
-            <Link
-              to={"/auth/login"}
-              style={{
-                textDecoration: "underline",
-                color: "#007aff"
-              }}
-            >Go to login page</Link>
-          </Text>
-        </Flex>
+            <Text>
+              <Link
+                to={"/auth/login"}
+                style={{
+                  textDecoration: "underline",
+                  color: "#007aff"
+                }}
+              >Go to login page</Link>
+            </Text>
+          </Flex>
+        </form>
       </Box>
     </Flex>
   </Box>

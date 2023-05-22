@@ -1,7 +1,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
-import { api, filterDomain, select } from "~/lib/http";
+import { api, filterDomain, handleErrors, handleSuccess, select } from "~/lib/http";
 import * as R from "ramda";
 import { transformK } from "~/lib/utils";
 
@@ -13,8 +13,8 @@ function useAuthState() {
     queryKey: ["/account"],
     queryFn: () => api
       .get("/account")
-      .then(result => result.data.data)
-      .then(filterDomain("items", "account"))
+      .then(handleSuccess("account"))
+      .catch(handleErrors("account"))
   });
 }
 
@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
 
   if(data) {
     value.isLoggedIn = true;
-    value.user = data.items[0].data;
+    value.user = data.data.items[0].data;
   }
 
   // console.log({
