@@ -79,14 +79,23 @@ export default function Login() {
               <Alert status='error'>
                 <AlertIcon />
                 <AlertTitle>Login Failed!</AlertTitle>
-                <AlertDescription>{loginMutation.error.getError().message}</AlertDescription>
+                <AlertDescription>
+                  {
+                    loginMutation.error.getError()?.message ||
+                    loginMutation.error.getRawValue()?.message
+                  }
+                </AlertDescription>
               </Alert>
             }
             {loginMutation.isSuccess &&
               <Alert status='success'>
                 <AlertIcon />
                 <AlertTitle>Login Successful!</AlertTitle>
-                <AlertDescription>{loginMutation.data.itemByDomain("auth").message}</AlertDescription>
+                <AlertDescription>
+                  {
+                    loginMutation.data.itemByDomain("auth")?.message
+                  }
+                </AlertDescription>
               </Alert>
             }
             {loginMutation.isLoading &&

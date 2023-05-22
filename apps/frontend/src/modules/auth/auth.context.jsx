@@ -1,6 +1,6 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { handleResponse, api } from "~/lib/http";
 
 const AuthContext = createContext();
@@ -33,17 +33,21 @@ export function AuthProvider({ children }) {
     queryClient.setQueryData(["/account"], [{ user }]);
   }
 
-  const value = {
-    isLoggedIn: false,
-    user: null,
-    reload,
-    setData,
-  };
+  const value = useMemo(() => {
+    const value = {
+      isLoggedIn: false,
+      user: null,
+      reload,
+      setData,
+    };
 
-  if(data) {
-    value.isLoggedIn = true;
-    value.user = data.itemByDomain("account").data;
-  }
+    if(data) {
+      value.isLoggedIn = true;
+      value.user = data.itemByDomain("account").data;
+    }
+
+    return value;
+  }, [data?.itemByDomain("account")?.data]);
 
   // console.log({
   //   isLoading,

@@ -56,14 +56,19 @@ export default function ForgotPassword() {
               <Alert status='error'>
                 <AlertIcon />
                 <AlertTitle>Reset Failed!</AlertTitle>
-                <AlertDescription>{forgotPasswordMutation.error.getError().message}</AlertDescription>
+                <AlertDescription>
+                  {
+                    forgotPasswordMutation.error.getError()?.message ||
+                    forgotPasswordMutation.error.getRawValue()?.message
+                  }
+                </AlertDescription>
               </Alert>
             }
             {forgotPasswordMutation.isSuccess &&
               <Alert status='success'>
                 <AlertIcon />
                 <AlertTitle>Link Sent!</AlertTitle>
-                <AlertDescription>{forgotPasswordMutation.data.itemByDomain("auth").message}</AlertDescription>
+                <AlertDescription>{forgotPasswordMutation.data.itemByDomain("auth")?.message}</AlertDescription>
               </Alert>
             }
             {forgotPasswordMutation.isLoading &&
