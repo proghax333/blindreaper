@@ -12,6 +12,11 @@ export const reject = (value) => {
 export const transformK = (keyFn, transformer) => data => {
   if(!data) return data;
 
+  // Make copy
+  data = {
+    ...data,
+  };
+
   const defaultTransformer = data => data;
   transformer = transformer || defaultTransformer;
 
