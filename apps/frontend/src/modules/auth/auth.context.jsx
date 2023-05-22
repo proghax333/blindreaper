@@ -1,9 +1,13 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import { handleResponse, api, filterDomain, handleErrors, handleSuccess, select } from "~/lib/http";
+import { createContext, useContext } from "react";
+import { handleResponse, api } from "~/lib/http";
 
-const AuthContext = React.createContext();
+const AuthContext = createContext();
+
+export function useAuthContext() {
+  return useContext(AuthContext);
+}
 
 function useAuthState() {
   return useQuery({
@@ -13,10 +17,6 @@ function useAuthState() {
       api.get("/account")
     )
   });
-}
-
-export function useAuthContext() {
-  return React.useContext(AuthContext);
 }
 
 export function AuthProvider({ children }) {
