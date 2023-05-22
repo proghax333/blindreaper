@@ -13,7 +13,11 @@
       ],
       "program": "${workspaceFolder}/apps/backend/src/index.js",
       "env": {
-        "MONGODB_CONNECTION_URL": "mongodb://127.0.0.1:27017/blindreaper_db?readPreference=primary&directConnection=true&ssl=false"
+        "MONGODB_CONNECTION_URL": "mongodb://127.0.0.1:27017/blindreaper_db?readPreference=primary&directConnection=true&ssl=false",
+        "MAIL_USERNAME": "",
+        "MAIL_PASSWORD": "",
+        "BASE_URL": "http://localhost:5001",
+        "WEB_BASE_URL": "http://localhost:5173"
       }
     }
   ]
