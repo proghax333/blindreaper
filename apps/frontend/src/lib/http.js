@@ -38,3 +38,75 @@ export const handleErrors = domain => async value => {
   value.response.data.error = result;
   return reject(value.response.data);
 };
+
+export function handleResponse(promise) {
+  return promise
+    .then(res => Response(res.data, true))
+    .catch(err => Response(err.response.data, false))
+}
+
+export function Response(dataOrError, isSuccess) {
+  dataOrError = dataOrError || {};
+
+  const value = {
+    data: null,
+    error: null,
+    ...dataOrError,
+  };
+
+  function first(list) {
+    if(!list) {
+      return null;
+    }
+
+    return list[0];
+  }
+
+  const result = {
+    value,
+    isSuccess,
+    itemsByDomain(domain) {
+      return this.entriesByDomain(
+        (value) => value.data?.items,
+        domain
+      );
+    },
+    errorsByDomain(domain) {
+      return this.entriesByDomain(
+        (value) => value.error?.items,
+        domain
+      );
+    },
+    itemByDomain(domain) {
+      return first(this.itemsByDomain(domain));
+    },
+    errorByDomain(domain) {
+      return first(this.errorsByDomain(domain));
+    },
+    entriesByDomain(selector, domain) {
+      const list = selector(value);
+      if(list) {
+        return list.filter(entry => entry.domain === domain);
+      }
+      return [];
+    },
+    getData() {
+      return value.data;
+    },
+    getError() {
+      return value.error;
+    },
+    hasError() {
+      return !!value.error;
+    },
+    hasData() {
+      return !!value.data;
+    }
+  };
+
+  if(isSuccess) {
+    return result;
+  } else {
+    throw result;
+  }
+}
