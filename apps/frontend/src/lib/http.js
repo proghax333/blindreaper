@@ -41,14 +41,14 @@ export const handleErrors = domain => async value => {
 
 export function handleResponse(promise) {
   return promise
-    .then(res => Response(res.data, true))
-    .catch(err => Response(err.response.data, false))
+    .then(res => Response(res?.data, true, res))
+    .catch(err => Response(err?.response?.data, false, err));
 }
 
-export function Response(dataOrError, isSuccess) {
+export function Response(dataOrError, isSuccess, raw) {
   dataOrError = dataOrError || {};
 
-  const value = {
+  let value = {
     data: null,
     error: null,
     ...dataOrError,
@@ -63,6 +63,9 @@ export function Response(dataOrError, isSuccess) {
   }
 
   const result = {
+    getRawValue() {
+      return raw;
+    },
     value,
     isSuccess,
     entriesByDomain(selector, domain) {
