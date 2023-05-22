@@ -15,12 +15,16 @@ function useAuthState() {
   });
 }
 
+export function useAuthContext() {
+  return React.useContext(AuthContext);
+}
+
 export function AuthProvider({ children }) {
   const { error, data, isLoading, isFetched } = useAuthState();
   const queryClient = useQueryClient();
 
   function reload() {
-    queryClient.invalidateQueries({
+    return queryClient.invalidateQueries({
       queryKey: ["/account"]
     });
   }

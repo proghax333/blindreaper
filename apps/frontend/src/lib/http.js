@@ -65,6 +65,13 @@ export function Response(dataOrError, isSuccess) {
   const result = {
     value,
     isSuccess,
+    entriesByDomain(selector, domain) {
+      const list = selector(value);
+      if(list) {
+        return list.filter(entry => entry.domain === domain);
+      }
+      return [];
+    },
     itemsByDomain(domain) {
       return this.entriesByDomain(
         (value) => value.data?.items,
@@ -82,13 +89,6 @@ export function Response(dataOrError, isSuccess) {
     },
     errorByDomain(domain) {
       return first(this.errorsByDomain(domain));
-    },
-    entriesByDomain(selector, domain) {
-      const list = selector(value);
-      if(list) {
-        return list.filter(entry => entry.domain === domain);
-      }
-      return [];
     },
     getData() {
       return value.data;

@@ -8,8 +8,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { api, filterErrors, filterItems, handleErrors, handleSuccess } from "~/lib/http";
+import { api, filterErrors, filterItems, handleErrors, handleResponse, handleSuccess } from "~/lib/http";
 import { wait } from "~/lib/utils";
+import { useAuthContext } from "~/modules/auth/auth.context";
 
 const loginSchema = z.object({
   login: z.string().nonempty("Login must not be empty."),
@@ -18,13 +19,12 @@ const loginSchema = z.object({
 
 function useLoginMutation(options = {}) {
   const mutation = useMutation({
-    mutationFn: ({ login, password }) => api
-      .post("/auth/login", {
+    mutationFn: ({ login, password }) => handleResponse(
+      api.post("/auth/login", {
         login,
         password
       })
-      .then(handleSuccess("auth"))
-      .catch(handleErrors("auth"))
+    )
     , ...options,
   });
 
@@ -36,9 +36,10 @@ export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
   });
+  const { reload } = useAuthContext();
   const loginMutation = useLoginMutation({
     onSuccess: () => {
-      wait(1000)
+      reload()
         .then(() => navigate("/dashboard"));
     }
   });
@@ -78,14 +79,14 @@ export default function Login() {
               <Alert status='error'>
                 <AlertIcon />
                 <AlertTitle>Login Failed!</AlertTitle>
-                <AlertDescription>{loginMutation.error.error.message}</AlertDescription>
+                <AlertDescription>{loginMutation.error.getError().message}</AlertDescription>
               </Alert>
             }
             {loginMutation.isSuccess &&
               <Alert status='success'>
                 <AlertIcon />
                 <AlertTitle>Login Successful!</AlertTitle>
-                <AlertDescription>{loginMutation.data.data.items[0].message}</AlertDescription>
+                <AlertDescription>{loginMutation.data.itemByDomain("auth").message}</AlertDescription>
               </Alert>
             }
             {loginMutation.isLoading &&

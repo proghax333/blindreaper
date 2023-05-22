@@ -7,7 +7,7 @@ import HeadingLogo from "~/ui/HeadingLogo";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { api, filterErrors, handleErrors, handleSuccess } from "~/lib/http";
+import { api, filterErrors, handleErrors, handleResponse, handleSuccess } from "~/lib/http";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -19,11 +19,9 @@ const forgotPasswordSchema = z.object({
 
 const useForgotPasswordMutation = () => {
   return useMutation({
-    mutationFn: ({ email }) => {
-      return api.post("/auth/forgot-password", { email })
-        .then(handleSuccess("auth"))
-        .catch(handleErrors("auth"))
-    }
+    mutationFn: ({ email }) => handleResponse(
+      api.post("/auth/forgot-password", { email })
+    )
   });
 }
 
@@ -58,14 +56,14 @@ export default function ForgotPassword() {
               <Alert status='error'>
                 <AlertIcon />
                 <AlertTitle>Reset Failed!</AlertTitle>
-                <AlertDescription>{forgotPasswordMutation.error.error.message}</AlertDescription>
+                <AlertDescription>{forgotPasswordMutation.error.getError().message}</AlertDescription>
               </Alert>
             }
             {forgotPasswordMutation.isSuccess &&
               <Alert status='success'>
                 <AlertIcon />
                 <AlertTitle>Link Sent!</AlertTitle>
-                <AlertDescription>{forgotPasswordMutation.data.data.items[0].message}</AlertDescription>
+                <AlertDescription>{forgotPasswordMutation.data.itemByDomain("auth").message}</AlertDescription>
               </Alert>
             }
             {forgotPasswordMutation.isLoading &&
