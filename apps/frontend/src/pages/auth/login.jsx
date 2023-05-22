@@ -88,6 +88,12 @@ export default function Login() {
                 <AlertDescription>{loginMutation.data.data.items[0].message}</AlertDescription>
               </Alert>
             }
+            {loginMutation.isLoading &&
+              <Alert status='loading'>
+                <AlertIcon />
+                <AlertTitle>Logging in...</AlertTitle>
+              </Alert>
+            }
 
             <FormControl isInvalid={errors.login}>
               <FormLabel>Username</FormLabel>
