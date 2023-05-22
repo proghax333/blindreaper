@@ -194,6 +194,7 @@ export default function AuthController({ env, passport, db, mail }) {
           return next(HttpError(401, "Could not find account with the email."));
         }
       } catch (e) {
+        // console.log("Error", e);
         return sendServerError();
       }
 
@@ -228,7 +229,9 @@ export default function AuthController({ env, passport, db, mail }) {
             });
             success = true;
             break;
-          } catch (e) { }
+          } catch (e) {
+            // console.log("Mail error: ", e);
+          }
         }
 
         if(success) {
@@ -239,7 +242,9 @@ export default function AuthController({ env, passport, db, mail }) {
             }]
           }));
         }
-      } catch (e) { }
+      } catch (e) {
+        // console.log("Email error: ", e);
+      }
 
       return sendServerError();
     },

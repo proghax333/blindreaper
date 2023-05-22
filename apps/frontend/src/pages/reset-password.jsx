@@ -14,11 +14,12 @@ export default function ResetPassword() {
 
     <Flex
       my={6}
+      p={2}
       w="full"
       alignItems={"center"}
       justifyContent={"center"}
     >
-      <Box maxW={96} w="full">
+      <Box maxW={"32rem"} w="full">
         <Heading>Reset Password</Heading>
 
         <Flex my={2} py={2} flexDirection={"column"} gap={2}>
