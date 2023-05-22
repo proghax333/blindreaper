@@ -1,13 +1,15 @@
 
 import React from "react";
 
-import { Box, Flex, Text, Heading, Button, Input, FormLabel } from "@chakra-ui/react";
+import { Box, Flex, Text, Heading, Button, Input, FormLabel, FormControl } from "@chakra-ui/react";
 import Header from "~/ui/Header";
 import HeadingLogo from "~/ui/HeadingLogo";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { api, filterErrors, handleErrors, handleSuccess } from "~/lib/http";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const forgotPasswordSchema = z.object({
   email: z.string()
@@ -30,7 +32,6 @@ export default function ForgotPassword() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(forgotPasswordSchema)
   });
-  
 
   const onSubmit = (data) => {
     
@@ -52,10 +53,10 @@ export default function ForgotPassword() {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex my={2} py={2} flexDirection={"column"} gap={2}>
-            <Box w="full">
+            <FormControl w="full">
               <FormLabel>Enter your email</FormLabel>
               <Input {...register("email")} type="text" w="full" />
-            </Box>
+            </FormControl>
 
             <Button>Send me a reset link</Button>
 
