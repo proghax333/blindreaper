@@ -20,6 +20,7 @@ export default async function AccountController({ }) {
                   id: account._id,
                   name: account.name,
                   description: account.description,
+                  key: account.key,
                 },
               }]
             }));
