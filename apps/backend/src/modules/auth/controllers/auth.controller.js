@@ -217,7 +217,7 @@ export default function AuthController({ env, passport, db, mail }) {
           }
         );
         
-        const link = `${env.WEB_BASE_URL}/reset-password?code=${code}`;
+        const link = `${env.WEB_BASE_URL}/reset-password/${code}`;
 
         for(let i = 0; i < 3; ++i) {
           try {
