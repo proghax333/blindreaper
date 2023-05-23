@@ -39,6 +39,7 @@ export default function Settings() {
     defaultValues: {
       "name": user.name,
       "description": user.description,
+      "publicKey": user.key,
     }
   });
   const accountUpdateMutation = useAccountUpdateMutation({
