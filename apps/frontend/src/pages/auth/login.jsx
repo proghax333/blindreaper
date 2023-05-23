@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { api, filterErrors, filterItems, handleErrors, handleResponse, handleSuccess } from "~/lib/http";
 import { wait } from "~/lib/utils";
-import { useAuthContext } from "~/modules/auth/auth.context";
+import { useAuth } from "~/modules/auth/auth.context";
 
 const loginSchema = z.object({
   login: z.string().nonempty("Login must not be empty."),
@@ -36,7 +36,7 @@ export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
   });
-  const { reload } = useAuthContext();
+  const { reload } = useAuth();
   const loginMutation = useLoginMutation({
     onSuccess: () => {
       reload()

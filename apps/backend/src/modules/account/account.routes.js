@@ -7,7 +7,7 @@ export default async function AccountRouterFactory(modules, config) {
 
   router
     .get("/", ...AccountController["/"])
-    .post("/update-details", ...AccountController["/update-details"])
+    .put("/update-details", ...AccountController["/update-details"])
   
   const app = modules.app.instance;
   app.use("/account", router);

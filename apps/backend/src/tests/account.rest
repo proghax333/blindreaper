@@ -6,7 +6,7 @@ Cookie: br_session=Fe26.2*1*0505739b46816e04f8fac2ae2797479a06a575fc7b9f940cb7e7
 
 ###
 
-POST http://localhost:5001/account/update-details
+PUT http://localhost:5001/account/update-details
 Content-Type: application/json
 
 {

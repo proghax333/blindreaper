@@ -5,7 +5,7 @@ import { handleResponse, api } from "~/lib/http";
 
 const AuthContext = createContext();
 
-export function useAuthContext() {
+export function useAuth() {
   return useContext(AuthContext);
 }
 
