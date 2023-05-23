@@ -126,9 +126,6 @@ async function main() {
             secure: process.env.NODE_ENV === "production",
           },
         });
-        app.use((req, res, next) => {
-          next();
-        })
         app.use(session);
         app.use((req, res, next) => {
           const sess = req.session;
@@ -254,13 +251,6 @@ async function main() {
   for(const factory of factories) {
     await container.register(factory);
   }
-
-  
-  app.post("/test", (req, res, next) => {
-    return res.json({
-      "ok": "OK"
-    })
-  });
 
   // Error 404 handler
   app.use((req, res, next) => {
