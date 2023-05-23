@@ -28,9 +28,7 @@ export function Dashboard() {
         duration: 3000,
         isClosable: true,
       });
-
-      wait(2000)
-        .then(() => navigate("/auth/login"));
+      navigate("/auth/login");
     }
   }, [isLoggedIn]);
 
