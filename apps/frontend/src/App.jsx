@@ -22,7 +22,7 @@ function RootRouter() {
     <Routes>
       <Route path="" element={<Index />} />
       <Route path="/forgot-password" element={<ForgotPassword />} /> 
-      <Route path="/reset-password" element={<ResetPassword />} /> 
+      <Route path="/reset-password/:code" element={<ResetPassword />} /> 
       
       <Route path="auth">
         <Route path="login" element={<Login />} />
