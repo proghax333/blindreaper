@@ -33,30 +33,17 @@ export function AuthProvider({ children }) {
     queryClient.setQueryData(["/account"], [{ user }]);
   }
 
-  const value = useMemo(() => {
-    const value = {
-      isLoggedIn: false,
-      user: null,
-      reload,
-      setData,
-    };
+  const value = {
+    isLoggedIn: false,
+    user: null,
+    reload,
+    setData,
+  };
 
-    if(data) {
-      value.isLoggedIn = true;
-      value.user = data.itemByDomain("account").data;
-    }
-
-    return value;
-  }, [data?.itemByDomain("account")?.data]);
-
-  // console.log({
-  //   isLoading,
-  //   data,
-  //   error
-  // });
-
-  // console.log("Auth state: ", value);
-
+  if(data) {
+    value.isLoggedIn = true;
+    value.user = data.itemByDomain("account").data;
+  }
 
   return <AuthContext.Provider value={value}>
     {!isLoading && children}
