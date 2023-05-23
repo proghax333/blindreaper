@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { useAuth } from "~/modules/auth/auth.context";
 import Header from "~/ui/Header";
 import HeadingLogo from "~/ui/HeadingLogo";
 
@@ -21,6 +22,8 @@ function StylishLink({ children, to = "/" }) {
 }
 
 export default function Index() {
+  const { isLoggedIn } = useAuth();
+
   return <div>
     <Header>
       <HeadingLogo />
@@ -30,7 +33,8 @@ export default function Index() {
         <NavigationItem>Docs</NavigationItem>
         <NavigationItem>About us</NavigationItem>
         {/*<NavigationItem to="/auth/login">Login</NavigationItem>*/}
-        <NavigationItem to="/dashboard/payloads">Dashboard</NavigationItem>
+        {isLoggedIn && <NavigationItem to="/dashboard/payloads">Dashboard</NavigationItem>}
+        {!isLoggedIn && <NavigationItem to="/auth/login">Login</NavigationItem>}
       </Navigation>
     </Header>
 
