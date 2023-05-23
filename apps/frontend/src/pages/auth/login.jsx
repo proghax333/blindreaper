@@ -40,7 +40,7 @@ export default function Login() {
   const loginMutation = useLoginMutation({
     onSuccess: () => {
       reload()
-        .then(() => navigate("/dashboard"));
+        .then(() => navigate("/dashboard/payloads"));
     }
   });
 
