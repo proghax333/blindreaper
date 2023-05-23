@@ -51,6 +51,19 @@ export default function Settings() {
         duration: 3000,
         isClosable: true,
       });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Update Failed!',
+        description:
+          error.errorByDomain("account")?.message ||
+          error.getError()?.message ||
+          error.getRawValue()?.message
+        ,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   });
 
