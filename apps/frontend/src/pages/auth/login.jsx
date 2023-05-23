@@ -11,6 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { api, filterErrors, filterItems, handleErrors, handleResponse, handleSuccess } from "~/lib/http";
 import { wait } from "~/lib/utils";
 import { useAuth } from "~/modules/auth/auth.context";
+import { useEffect } from "react";
 
 const loginSchema = z.object({
   login: z.string().nonempty("Login must not be empty."),
@@ -36,13 +37,18 @@ export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
   });
-  const { reload } = useAuth();
+  const { isLoggedIn, reload } = useAuth();
   const loginMutation = useLoginMutation({
     onSuccess: () => {
-      reload()
-        .then(() => navigate("/dashboard/payloads"));
+      reload();
     }
   });
+
+  useEffect(() => {
+    if(isLoggedIn && loginMutation.isSuccess) {
+      navigate("/dashboard/payloads");
+    }
+  }, [isLoggedIn, loginMutation.isSuccess]);
 
   async function onSubmit(data) {
     loginMutation.mutate(data);
