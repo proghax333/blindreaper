@@ -1,18 +1,43 @@
-import { Box, Button, Divider, Flex, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Button, Divider, Flex, Text, Tooltip, useToast } from "@chakra-ui/react";
 import Header from "~/ui/Header";
 import HeadingLogo from "~/ui/HeadingLogo";
 import ActionBarButton from "~/ui/ActionBarButton";
 
 import { AccountCircle, CheckCircle, Extension, NoteAdd, Code, ArrowDropDown, KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, CameraAlt } from "@emotion-icons/material";
 import { Settings, Notes, Note } from "@emotion-icons/material-outlined"
-import React from "react";
-import { Outlet, Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "~/modules/auth/auth.context";
+import { wait } from "~/lib/utils";
 
 export default function DashboardIndex() {
   return null;
 }
 
 export function Dashboard() {
+  const toast = useToast();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      toast({
+        title: "Not logged in!",
+        // description: "",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      wait(2000)
+        .then(() => navigate("/auth/login"));
+    }
+  }, [isLoggedIn]);
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
   return <Flex
     w="full"
     h="full"
@@ -59,7 +84,7 @@ export function Dashboard() {
     </Flex>
 
     <Divider />
-    
+
     {/* Bottom Status Bar */}
     <Flex w="full" background="gray.900" minH="8" alignItems="center">
       <ActionBarButton w={"8"} h={"full"}>
