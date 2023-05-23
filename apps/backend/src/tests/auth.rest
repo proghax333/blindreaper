@@ -51,7 +51,7 @@ POST http://localhost:5001/auth/reset-password
 Content-Type: application/json
 
 {
-  "email": "atmanandacademics@gmail.com",
   "code": "7efefbb608d35081956e6b6c3d4e25687316d4632b22d8965f3a54ae24e80358",
+  "email": "atmanandacademics@gmail.com",
   "password": "changedpass"
 }
