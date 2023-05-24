@@ -120,7 +120,12 @@ export default function AuthController({ env, passport, db, mail }) {
           })
             // Auth created successfully
             .then(async createdAuth => {
-              return res.send(HttpResponse());
+              return res.send(HttpData({
+                items: [{
+                  domain: "auth",
+                  message: "Account created successfully!"
+                }]
+              }));
             })
             // Auth creation failed
             .catch(async error => {
