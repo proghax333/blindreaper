@@ -2,7 +2,7 @@ import React from "react";
 
 import { Box, Flex, Divider, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure, Button, FormLabel, Input, FormControl, useToast, Popover, PopoverTrigger, PopoverContent, FocusLock, PopoverArrow, PopoverCloseButton, IconButton, Stack, ButtonGroup } from "@chakra-ui/react";
 
-import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit } from "@emotion-icons/material";
+import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit, Delete } from "@emotion-icons/material";
 
 import ActionBarButton from "~/ui/ActionBarButton";
 import { useSelector } from "react-redux";
@@ -37,15 +37,7 @@ function useMemoSortedCollection(collections) {
     return result;
   }, [collections]);
 }
-
-const TextInput = React.forwardRef((props, ref) => {
-  return (
-    <FormControl>
-      <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
-      <Input ref={ref} id={props.id} {...props} />
-    </FormControl>
-  )
-});
+;
 
 const editPayloadSchema = z.object({
   name: z.string(),
@@ -54,6 +46,9 @@ const editPayloadSchema = z.object({
 function EditPayloadForm({ firstFieldRef, onClose, payload, onSubmit }) {
   const { register, handleSubmit, formState: { errors }} = useForm({
     resolver: zodResolver(editPayloadSchema),
+    defaultValues: {
+      name: payload?.name || ""
+    }
   });
 
   const { ref: firstRef, ...firstRest } = register("name");
@@ -61,16 +56,17 @@ function EditPayloadForm({ firstFieldRef, onClose, payload, onSubmit }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={4}>
-        <TextInput
-          label='Payload name'
-          id='name'
-          {...firstRest}
-          ref={(e) => {
-            firstRef(e);
-            firstFieldRef.current = e;
-          }}
-          defaultValue={payload?.name || ""}
-        />
+        <FormControl isInvalid={errors.name}>
+          <FormLabel>Name</FormLabel>
+          <Input
+            ref={(e) => {
+              firstRef(e);
+              firstFieldRef.current = e;
+            }}
+            {...firstRest}
+            type="text"
+          />
+        </FormControl>
         <ButtonGroup display='flex' justifyContent='flex-end'>
           <Button variant='outline' onClick={onClose}>
             Cancel
@@ -84,9 +80,10 @@ function EditPayloadForm({ firstFieldRef, onClose, payload, onSubmit }) {
   )
 }
 
+
 function useUpdatePayloadMutation({ payload, ...options }) {
   return useMutation({
-    mutationKey: ["/payloads", payload.id],
+    mutationKey: ["/payloads", "update", payload.id],
     mutationFn: (data) => handleResponse(
       api.put(`/payloads/${payload.id}`, data)
     ),
@@ -135,7 +132,7 @@ function PayloadEdit({ payload }) {
 
   return <Popover
     isOpen={isOpen}
-    initialFocusRef={firstFieldRef}
+    // initialFocusRef={firstFieldRef}
     onOpen={onOpen}
     onClose={onClose}
     placement='right'
@@ -166,8 +163,112 @@ function PayloadEdit({ payload }) {
   </Popover>;
 }
 
+function useDeletePayloadMutation({ payload, ...options }) {
+  return useMutation({
+    mutationKey: ["/payloads", "delete", payload.id],
+    mutationFn: () => handleResponse(
+      api.delete(`/payloads/${payload.id}`)
+    ),
+    ...options
+  })
+}
+
+function DeletePayloadForm({ onClose, payload, onSubmit }) {
+  const { register, handleSubmit, formState: { errors }} = useForm();
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack spacing={4}>
+        <FormControl>
+          <FormLabel>Confirm delete?</FormLabel>
+        </FormControl>
+        <ButtonGroup display='flex' justifyContent='flex-end'>
+          <Button variant='outline' onClick={onClose}>
+            Cancel
+          </Button>
+          <Button colorScheme='teal' type="submit">
+            Delete
+          </Button>
+        </ButtonGroup>
+      </Stack>
+    </form>
+  )
+}
+
+function PayloadDelete({ payload }) {
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  const deletePayloadMutation = useDeletePayloadMutation({
+    payload,
+    onSuccess: (data) => {
+      toast({
+        title: 'Success!',
+        description: data.itemByDomain("payload").message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      queryClient.invalidateQueries(["/payloads"]);
+      onClose(data.itemByDomain("payload"));
+    },
+    onError: (error) => {
+      toast({
+        title: 'Deletion Failed!',
+        description:
+          error.errorByDomain("account")?.message ||
+          error.getError()?.message ||
+          error.getRawValue()?.message
+        ,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  });
+
+  function onSubmit(data) {
+    deletePayloadMutation.mutate(data);
+  }
+
+  const { onOpen, onClose, isOpen } = useDisclosure();
+  // const firstFieldRef = React.useRef(null);
+
+  return <Popover
+    isOpen={isOpen}
+    // initialFocusRef={firstFieldRef}
+    onOpen={onOpen}
+    onClose={onClose}
+    placement='right'
+    closeOnBlur={false}
+  >
+    <PopoverTrigger>
+      <Button 
+        w={"2"}
+        maxW="2"
+        h={"7"}
+        padding={0}
+        margin={0}
+        borderRadius={0}
+        className="button-delete-payload"
+        background={"transparent"}
+        display="none"
+      >
+        <Delete size={16} />
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent p={5}>
+      <FocusLock returnFocus persistentFocus={false}>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <DeletePayloadForm onClose={onClose} payload={payload} onSubmit={onSubmit} />
+      </FocusLock>
+    </PopoverContent>
+  </Popover>;
+}
+
 const NodeItem = styled(Flex)`
-  &:hover > .button-edit-payload {
+  &:hover > .button-edit-payload, &:hover > .button-delete-payload {
     display: flex;
   }
 `;
@@ -205,6 +306,7 @@ function TreeCollection({ node: node_, level = 0 }) {
       <IconComponent m={1} size={LEFT_ICON_SIZE} style={{minWidth: LEFT_ICON_SIZE}} />
       <Text my={1} px={1} flex={1}>{node.name}</Text>
       <PayloadEdit payload={node} />
+      <PayloadDelete payload={node} />
     </NodeItem>
 
     {
