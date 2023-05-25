@@ -1,7 +1,7 @@
 
 import React from "react";
 
-import { Button, ButtonGroup, Flex, FocusLock, FormControl, FormLabel, Input, Popover, PopoverArrow, PopoverCloseButton, PopoverContent, PopoverTrigger, Stack, useDisclosure, useToast } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, FocusLock, FormControl, FormErrorMessage, FormLabel, Input, Popover, PopoverArrow, PopoverCloseButton, PopoverContent, PopoverTrigger, Stack, useDisclosure, useToast } from "@chakra-ui/react";
 import { Edit } from "@emotion-icons/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -36,6 +36,7 @@ function EditPayloadForm({ firstFieldRef, onClose, payload, onSubmit }) {
             {...firstRest}
             type="text"
           />
+          {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
         </FormControl>
         <ButtonGroup display='flex' justifyContent='flex-end'>
           <Button variant='outline' onClick={onClose}>
