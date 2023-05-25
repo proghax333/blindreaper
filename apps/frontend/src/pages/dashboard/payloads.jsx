@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Box, Flex, Divider, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure, Button, FormLabel, Input, FormControl, useToast } from "@chakra-ui/react";
+import { Box, Flex, Divider, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, useDisclosure, Button, FormLabel, Input, FormControl, useToast, Popover, PopoverTrigger, PopoverContent, FocusLock, PopoverArrow, PopoverCloseButton, IconButton, Stack, ButtonGroup } from "@chakra-ui/react";
 
-import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add } from "@emotion-icons/material";
+import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit } from "@emotion-icons/material";
 
 import ActionBarButton from "~/ui/ActionBarButton";
 import { useSelector } from "react-redux";
@@ -13,6 +13,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, handleResponse } from "~/lib/http";
+import styled from "@emotion/styled";
 
 function useMemoSortedCollection(collections) {
   return React.useMemo(() => {
@@ -37,6 +38,140 @@ function useMemoSortedCollection(collections) {
   }, [collections]);
 }
 
+const TextInput = React.forwardRef((props, ref) => {
+  return (
+    <FormControl>
+      <FormLabel htmlFor={props.id}>{props.label}</FormLabel>
+      <Input ref={ref} id={props.id} {...props} />
+    </FormControl>
+  )
+});
+
+const editPayloadSchema = z.object({
+  name: z.string(),
+});
+
+function EditPayloadForm({ firstFieldRef, onClose, payload, onSubmit }) {
+  const { register, handleSubmit, formState: { errors }} = useForm({
+    resolver: zodResolver(editPayloadSchema),
+  });
+
+  const { ref: firstRef, ...firstRest } = register("name");
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack spacing={4}>
+        <TextInput
+          label='Payload name'
+          id='name'
+          {...firstRest}
+          ref={(e) => {
+            firstRef(e);
+            firstFieldRef.current = e;
+          }}
+          defaultValue={payload?.name || ""}
+        />
+        <ButtonGroup display='flex' justifyContent='flex-end'>
+          <Button variant='outline' onClick={onClose}>
+            Cancel
+          </Button>
+          <Button colorScheme='teal' type="submit">
+            Save
+          </Button>
+        </ButtonGroup>
+      </Stack>
+    </form>
+  )
+}
+
+function useUpdatePayloadMutation({ payload, ...options }) {
+  return useMutation({
+    mutationKey: ["/payloads", payload.id],
+    mutationFn: (data) => handleResponse(
+      api.put(`/payloads/${payload.id}`, data)
+    ),
+    ...options,
+  });
+}
+
+function PayloadEdit({ payload }) {
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  const updatePayloadMutation = useUpdatePayloadMutation({
+    payload,
+    onSuccess: (data) => {
+      toast({
+        title: 'Success!',
+        description: data.itemByDomain("payload").message,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+      queryClient.invalidateQueries(["/payloads"]);
+      onClose(data.itemByDomain("payload"));
+    },
+    onError: (error) => {
+      toast({
+        title: 'Update Failed!',
+        description:
+          error.errorByDomain("account")?.message ||
+          error.getError()?.message ||
+          error.getRawValue()?.message
+        ,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  });
+
+  function onSubmit(data) {
+    updatePayloadMutation.mutate(data);
+  }
+
+  const { onOpen, onClose, isOpen } = useDisclosure();
+  const firstFieldRef = React.useRef(null);
+
+  return <Popover
+    isOpen={isOpen}
+    initialFocusRef={firstFieldRef}
+    onOpen={onOpen}
+    onClose={onClose}
+    placement='right'
+    closeOnBlur={false}
+  >
+    <PopoverTrigger>
+      <Button 
+        w={"2"}
+        maxW="2"
+        h={"7"}
+        padding={0}
+        margin={0}
+        borderRadius={0}
+        className="button-edit-payload"
+        background={"transparent"}
+        display="none"
+      >
+        <Edit size={16} />
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent p={5}>
+      <FocusLock returnFocus persistentFocus={false}>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <EditPayloadForm firstFieldRef={firstFieldRef} onClose={onClose} payload={payload} onSubmit={onSubmit} />
+      </FocusLock>
+    </PopoverContent>
+  </Popover>;
+}
+
+const NodeItem = styled(Flex)`
+  &:hover > .button-edit-payload {
+    display: flex;
+  }
+`;
+
 function TreeCollection({ node: node_, level = 0 }) {
   const LEFT_ICON_SIZE = 18;
   const [isOpen, setIsOpen] = React.useState(false);
@@ -58,19 +193,19 @@ function TreeCollection({ node: node_, level = 0 }) {
     : InsertDriveFile;
 
   return <Box>
-    <Flex
+    <NodeItem
       pl={`${4 + level * 12 + (nodeChildren == undefined ? 0 : 0)}px`}
       alignItems={"center"}
-      py={1}
       cursor={"pointer"}
       onClick={handleToggle}
       _hover={{
         background: "gray.800"
       }}
     >
-      <IconComponent size={LEFT_ICON_SIZE} style={{minWidth: LEFT_ICON_SIZE}} />
-      <Text px={1}>{node.name}</Text>
-    </Flex>
+      <IconComponent m={1} size={LEFT_ICON_SIZE} style={{minWidth: LEFT_ICON_SIZE}} />
+      <Text my={1} px={1} flex={1}>{node.name}</Text>
+      <PayloadEdit payload={node} />
+    </NodeItem>
 
     {
       isOpen && nodeChildren &&
@@ -121,7 +256,7 @@ function CreatePayloadModal({ isOpen, onOpen, onClose, parentIdRef }) {
     },
     onError: (error) => {
       toast({
-        title: 'Update Failed!',
+        title: 'Failed!',
         description:
           error.errorByDomain("account")?.message ||
           error.getError()?.message ||
