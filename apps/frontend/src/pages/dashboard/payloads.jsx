@@ -93,8 +93,8 @@ export default function MainContent() {
     background="blackAlpha.700"
   >
     <Box
-      w={{base:"10rem", md: "14rem"}}
-      minW={{base:"10rem", md: "14rem"}}
+      w={"14rem"}
+      minW={"14rem"}
       h="full"
       background="gray.900"
     >
