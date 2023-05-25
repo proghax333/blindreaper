@@ -156,12 +156,12 @@ function CreatePayloadModal({ isOpen, onOpen, onClose, parentIdRef }) {
         <ModalHeader>Create Payload</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-            <Flex direction={"column"} gap={2}>
-              <FormControl>
-                <FormLabel>Payload Name</FormLabel>
-                <Input {...register("name")} type="text" />
-              </FormControl>
-            </Flex>
+          <Flex direction={"column"} gap={2}>
+            <FormControl>
+              <FormLabel>Payload Name</FormLabel>
+              <Input {...register("name")} type="text" />
+            </FormControl>
+          </Flex>
         </ModalBody>
 
         <ModalFooter>
