@@ -1,5 +1,5 @@
 
-import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { ArrowDropDown, ArrowDropUp, Close, Search } from "@emotion-icons/material";
 import React from "react";
 
@@ -9,6 +9,7 @@ import React from "react";
 
 function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
   const { id, site, screenshot, title, time } = data;
+  const createPayloadModal = useDisclosure();
 
   const [itemVisible, setItemVisible] = React.useState(false);
 
@@ -298,6 +299,7 @@ export default function Captures({ ...props }) {
 
     {...props}
   >
+
     <Flex
       alignItems="center"
       justifyContent={"space-between"}
