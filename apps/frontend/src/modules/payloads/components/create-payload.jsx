@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useToast } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormErrorMessage, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useToast } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -76,9 +76,10 @@ export function CreatePayloadModal({ isOpen, onOpen, onClose, parentIdRef }) {
         <ModalCloseButton />
         <ModalBody>
           <Flex direction={"column"} gap={2}>
-            <FormControl>
+            <FormControl isInvalid={errors.name}>
               <FormLabel>Payload Name</FormLabel>
               <Input {...register("name")} type="text" />
+              {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
             </FormControl>
           </Flex>
         </ModalBody>
