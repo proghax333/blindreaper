@@ -36,7 +36,14 @@ export default async function PayloadsController({  }) {
               },
               {
                 domain: "payload",
-                data: docs,
+                data: docs.map(({ _id: id, name, owner_id, parent_id }) => {
+                  return {
+                    id,
+                    name,
+                    owner_id,
+                    parent_id,
+                  }
+                }),
               }
             ]
           }));
