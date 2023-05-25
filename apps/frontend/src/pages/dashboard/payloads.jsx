@@ -119,7 +119,7 @@ function CreatePayloadModal({ isOpen, onOpen, onClose, parentIdRef }) {
       queryClient.invalidateQueries(["/payloads"]);
       onClose(data.itemByDomain("payload"));
     },
-    onError: () => {
+    onError: (error) => {
       toast({
         title: 'Update Failed!',
         description:
