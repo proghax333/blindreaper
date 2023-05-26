@@ -169,7 +169,7 @@ export default function MainContent() {
           overflowY="auto"
           overflowX="auto"
         >
-          <TreeCollection
+          {/* <TreeCollection
             key={`tree-node-show-all`}
             node={nodeShowAll}
             level={0}
@@ -179,7 +179,7 @@ export default function MainContent() {
             onPayloadOpen={onPayloadOpen}
             onPayloadClose={onPayloadClose}
             icon={Star}
-          />
+          /> */}
 
           {payloads && payloads.map(node => {
             return <TreeCollection
