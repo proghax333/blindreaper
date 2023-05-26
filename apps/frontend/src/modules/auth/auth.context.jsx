@@ -29,6 +29,13 @@ export function AuthProvider({ children }) {
     });
   }
 
+  async function logout() {
+    await queryClient.setQueryData(["/account"], () => {
+      return null;
+    });
+    return reload();
+  };
+
   function setData({ user }) {
     queryClient.setQueryData(["/account"], [{ user }]);
   }
@@ -37,6 +44,7 @@ export function AuthProvider({ children }) {
     isLoggedIn: false,
     user: null,
     reload,
+    logout,
     setData,
   };
 

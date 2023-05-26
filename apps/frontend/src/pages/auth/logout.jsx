@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, handleResponse } from "~/lib/http";
+import { useAuth } from "~/modules/auth/auth.context";
 
 function useLogoutMutation(options = {}) {
   return useMutation({
@@ -19,6 +20,8 @@ export default function Logout() {
   const toast = useToast();
   const navigate = useNavigate();
   const loggingOutToastRef = React.useRef(null);
+
+  const { logout } = useAuth();
 
   function closeLoading() {
     toast.close(loggingOutToastRef.current);
@@ -42,7 +45,9 @@ export default function Logout() {
         isClosable: true,
       });
 
-      navigate("/auth/login");
+      logout()
+        .then(() => navigate("/auth/login"));
+
     },
     onError: (error) => {
       closeLoading();
