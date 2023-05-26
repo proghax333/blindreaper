@@ -7,12 +7,8 @@ import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit, Delete } f
 import ActionBarButton from "~/ui/ActionBarButton";
 
 import Captures from "~/modules/payloads/components/captures";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api, handleResponse } from "~/lib/http";
-import styled from "@emotion/styled";
 import { CreatePayloadModal } from "~/modules/payloads/components/create-payload";
 import { PayloadEdit } from "~/modules/payloads/components/update-payload";
 import { PayloadDelete } from "~/modules/payloads/components/delete-payload";
