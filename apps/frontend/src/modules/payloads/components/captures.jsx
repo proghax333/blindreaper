@@ -1,21 +1,43 @@
 
 import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { ArrowDropDown, ArrowDropUp, Close, Search } from "@emotion-icons/material";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { API_BASE_URL, api, handleResponse } from "~/lib/http";
 
 // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 // import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
-  const { id, site, screenshot, title, time } = data;
-  const createPayloadModal = useDisclosure();
+const fieldsList = [
+  { path: "Screenshot", type: "image" },
+  { path: "Cookies" },
+  { path: "Location" },
+  { path: "Referrer" },
+  { path: "User-Agent" },
+  { path: "Browser Time" },
+  { path: "Origin" },
+  { path: "DOM" },
+  { path: "localStorage" },
+  { path: "sessionStorage" },
+];
+const fieldsMapping = fieldsList.reduce((result, field) => {
+  result[field.path] = field;
+  return result;
+}, {});
+
+function CaptureItem({ capture, handleCaptureItemClick, isActive = false }) {
+  const { data, id } = capture;
 
   const [itemVisible, setItemVisible] = React.useState(false);
 
   const handleToggleItem = () => {
     setItemVisible(state => !state);
   };
+
+  let { Screenshot, Location, Title } = data;
+  let BrowserTime = data["Browser Time"];
+  let Site = Location;
 
   return <Flex
     flexDirection="column"
@@ -51,7 +73,7 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
       </Button>
       <Image
         // alignSelf={"center"}
-        src={screenshot}
+        src={Screenshot}
         w="32"
       />
 
@@ -72,16 +94,16 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
           fontFamily={"Montserrat"}
           // onClick={() => handleCaptureItemClick(id)}
         >
-          {title}
+          {Title}
         </Text>
         <Box>
           <Link
-            href={site}
+            href={Site}
             fontSize={"sm"}
             textColor={"whiteAlpha.800"}
             target="_blank"
           >
-            {site}
+            {Site}
           </Link>
         </Box>
 
@@ -91,7 +113,7 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
           fontSize={"xs"}
           color={"whiteAlpha.800"}
         >
-          {time.toString()}
+          {BrowserTime?.toString()}
         </Text>
       </Flex>
     </Flex>
@@ -102,12 +124,17 @@ function CaptureItem({ data, handleCaptureItemClick, isActive = false }) {
         w={"full"}
         gap={2}
       >
-        <InfoItem>
-          <Heading variant="small">Screenshot</Heading>
-          <Divider my={1} />
-
-          <Image src={screenshot} />
-        </InfoItem>
+        {fieldsList.map(field => {
+          return <InfoItem>
+            <Heading variant="small">{field.path}</Heading>
+            <Divider my={1} />
+            {
+              field.type === "image"
+                ? <Image src={data[field.path]} />
+                : <Code>{data[field.path]}</Code>
+            }
+          </InfoItem>
+        })}
       </Flex>
     </>}
   </Flex>;
@@ -226,71 +253,76 @@ function CaptureInfo({
   </Flex>
 }
 
-export default function Captures({ ...props }) {
-  const captures = [
-    {
-      id: 101,
-      title: "Home | GUGURU",
-      site: "https://www.google.com",
-      screenshot: "https://cdn.dribbble.com/users/239755/screenshots/2476419/media/12af6dbdc389c698bc59e404cb7305ed.png?compress=1&resize=400x300",
-      time: new Date(),
-    },
-    {
-      id: 102,
-      title: "Post | GUGURU",
-      site: "https://www.google.com",
-      screenshot: "https://cdn.dribbble.com/users/239755/screenshots/2476419/media/12af6dbdc389c698bc59e404cb7305ed.png?compress=1&resize=400x300",
-      time: new Date(),
-    },
-    {
-      id: 103,
-      title: "Post | GUGURU",
-      site: "https://www.google.com",
-      screenshot: "https://cdn.dribbble.com/users/239755/screenshots/2476419/media/12af6dbdc389c698bc59e404cb7305ed.png?compress=1&resize=400x300",
-      time: new Date(),
-    },
-    {
-      id: 105,
-      title: "Post | GUGURU",
-      site: "https://www.google.com",
-      screenshot: "https://cdn.dribbble.com/users/239755/screenshots/2476419/media/12af6dbdc389c698bc59e404cb7305ed.png?compress=1&resize=400x300",
-      time: new Date(),
-    },
-    {
-      id: 108,
-      title: "Post | GUGURU",
-      site: "https://www.google.com",
-      screenshot: "https://cdn.dribbble.com/users/239755/screenshots/2476419/media/12af6dbdc389c698bc59e404cb7305ed.png?compress=1&resize=400x300",
-      time: new Date(),
-    },
-    {
-      id: 110,
-      title: "Post | GUGURU",
-      site: "https://www.google.com",
-      screenshot: "https://cdn.dribbble.com/users/239755/screenshots/2476419/media/12af6dbdc389c698bc59e404cb7305ed.png?compress=1&resize=400x300",
-      time: new Date(),
-    },
-  ];
+function useGetPayloadQuery({
+  id,
+  ...options
+}) {
+  return useQuery({
+    queryKey: ["/payloads", id],
+    queryFn: () => handleResponse(
+      api.get(`/payloads/${id}`)
+    ),
+    ...options,
+  });
+}
 
-  const [selectedCaptureId, setSelectedCaptureId] = React.useState(null);
+function useGetCapturesQuery({
+  id,
+  page,
+  limit,
+  ...options
+}) {
+  const paginationOptions = {};
+  if(page !== undefined) {
+    paginationOptions.page = page;
+  }
+  if(limit !== undefined) {
+    paginationOptions.limit = limit;
+  }
+
+  const params = new URLSearchParams(paginationOptions);
+  const paramString = params.size > 0 ? params.toString() : "";
+
+  return useQuery({
+    queryKey: ["/payloads", id, page, limit],
+    queryFn: () => handleResponse(
+      api.get(`/payloads/${id}/captures${paramString}`)
+    ),
+    ...options,
+  });
+}
+
+export default function Captures({ payload, ...props }) {
   const [selectedCapture, setSelectedCapture] = React.useState(null);
 
   function handleClose() {
-    setSelectedCaptureId(null);
     setSelectedCapture(null);
   }
 
   function handleCaptureItemClick(id) {
-    setSelectedCaptureId(captureId => {
-      if(id == captureId) {
+    setSelectedCapture(capture => {
+      if(capture.id === id) {
         setSelectedCapture(null);
         return null;
       }
-
-      setSelectedCapture(captures.find(c => c.id === id));
-      return id;
     });
   }
+
+  let page, limit;
+
+  const getPayloadQuery = useGetPayloadQuery({
+    id: payload.id,
+  });
+  payload = getPayloadQuery.data?.itemByDomain("payload").data || payload;
+
+  const getCapturesQuery = useGetCapturesQuery({
+    id: payload.id,
+    page,
+    limit,
+  });
+  const captures = getCapturesQuery.data?.itemByDomain("payload").data;
+  const meta = getCapturesQuery.data?.itemByDomain("meta").data;
+  const scriptLink = `${API_BASE_URL}/use/${payload.id}`;
 
   return <Flex
     h="full"
@@ -301,13 +333,26 @@ export default function Captures({ ...props }) {
   >
 
     <Flex
-      alignItems="center"
       justifyContent={"space-between"}
       px={8}
       gap={4}
       w="full"
     >
-      <Heading fontSize={36}>Captures</Heading>
+      <Flex direction={"column"} fontSize={"sm"}>
+        {
+          payload.id === "root"
+            ? <>
+                <Heading mt={4} fontSize={36}>Captures</Heading>
+              </>
+            : <>
+                <Heading mt={4} fontSize={36}>{payload?.name}</Heading>
+                <Flex my={2} gap={2} alignItems="center">
+                  <Heading size={"xs"}>Script URL: </Heading>
+                  <Link href={scriptLink} target="_blank">{scriptLink}</Link>
+                </Flex>
+              </>
+        }
+      </Flex>
       <Box maxW={72} p={6}>
         <form>
           <InputGroup>
@@ -337,11 +382,11 @@ export default function Captures({ ...props }) {
         <CapturesList>
           {
             captures
-              .map(capture => {
+              ?.map(capture => {
                   return <CaptureItem
                     key={`capture-item-${capture.id}`}
-                    data={capture}
-                    isActive={capture.id === selectedCaptureId}
+                    capture={capture}
+                    isActive={capture.id === selectedCapture?.id}
                     handleCaptureItemClick={handleCaptureItemClick}
                   />
                 }

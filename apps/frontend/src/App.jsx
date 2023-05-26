@@ -32,6 +32,7 @@ function RootRouter() {
       <Route path="dashboard" element={<Dashboard />}>
         <Route path="" element={<DashboardIndex />} />
         <Route path="payloads" element={<Payloads />} />
+        <Route path="payloads/:id" element={<Payloads />} />
         <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>

@@ -4,8 +4,10 @@ import { reject, transformK } from "~/lib/utils";
 
 import * as R from "ramda";
 
+export const API_BASE_URL = "http://localhost:5001";
+
 export const api = axios.create({
-  baseURL: 'http://localhost:5001',
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 

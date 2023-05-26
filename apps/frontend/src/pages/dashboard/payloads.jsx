@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Box, Flex, Divider, Text, useDisclosure } from "@chakra-ui/react";
 
-import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit, Delete } from "@emotion-icons/material";
+import { Star, KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit, Delete } from "@emotion-icons/material";
 
 import ActionBarButton from "~/ui/ActionBarButton";
 
@@ -14,8 +14,9 @@ import { PayloadEdit } from "~/modules/payloads/components/update-payload";
 import { PayloadDelete } from "~/modules/payloads/components/delete-payload";
 import { useMemoSortedCollection } from "~/modules/payloads/hooks/payloads.hooks";
 import { NodeItem } from "~/modules/payloads/components/node-item";
+import { useNavigate, useParams } from "react-router-dom";
 
-function TreeCollection({ node: node_, level = 0, selected, onPayloadOpen, onPayloadClose }) {
+function TreeCollection({ node: node_, level = 0, selected, onPayloadOpen, onPayloadClose, isConstant = false, icon }) {
   const LEFT_ICON_SIZE = 18;
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -29,11 +30,11 @@ function TreeCollection({ node: node_, level = 0, selected, onPayloadOpen, onPay
     setIsOpen(state => !state);
   }
 
-  const IconComponent = nodeChildren
+  const IconComponent = icon || (nodeChildren
     ? isOpen
       ? KeyboardArrowDown
       : ChevronRight
-    : InsertDriveFile;
+    : InsertDriveFile);
 
   function onSelect() {
     if(selected?.id === node.id) {
@@ -56,8 +57,10 @@ function TreeCollection({ node: node_, level = 0, selected, onPayloadOpen, onPay
     >
       <IconComponent m={1} size={LEFT_ICON_SIZE} style={{minWidth: LEFT_ICON_SIZE}} />
       <Text my={1} px={1} flex={1} onClick={onSelect}>{node.name}</Text>
-      <PayloadEdit payload={node} />
-      <PayloadDelete payload={node} />
+      {!isConstant && <>
+        <PayloadEdit payload={node} />
+        <PayloadDelete payload={node} />
+      </>}
     </NodeItem>
 
     {
@@ -79,7 +82,6 @@ function TreeCollection({ node: node_, level = 0, selected, onPayloadOpen, onPay
   </Box>
 }
 
-
 function useGetPayloadsQuery(options) {
   return useQuery({
     queryKey: ["/payloads"],
@@ -90,20 +92,44 @@ function useGetPayloadsQuery(options) {
   });
 }
 
+const nodeShowAll = {
+  id: "root",
+  name: "Show All"
+};
+
 export default function MainContent() {
   // const { collections } = payloads;
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
   const getPayloadsQuery = useGetPayloadsQuery();
   const payloads = useMemoSortedCollection(getPayloadsQuery.data?.itemByDomain("payload")?.data);
   const createPayloadModal = useDisclosure();
 
-  const [selected, setSelected] = React.useState(null);
+  const selected = {
+    id: id || "root",
+  };
+
+  // const [selected, setSelected] = React.useState(null);
+
+
+
+  // useEffect(() => {
+  //   if(payloads &&
+  //     selected &&
+  //     !payloads.find(payload => payload.id === selected.id)
+  //     && selected.id !== nodeShowAll.id
+  //   ) {
+  //     setSelected(null);
+  //   }
+  // }, [payloads, selected]);
 
   function onPayloadOpen(payload) {
-    console.log(payload);
-    setSelected(payload);
+    // setSelected(payload);
+    navigate(`/dashboard/payloads/${payload.id}`);
   }
   function onPayloadClose(payload) {
-    setSelected(null);
+    navigate(`/dashboard/payloads`);
   }
 
   return <Flex
@@ -143,6 +169,18 @@ export default function MainContent() {
           overflowY="auto"
           overflowX="auto"
         >
+          <TreeCollection
+            key={`tree-node-show-all`}
+            node={nodeShowAll}
+            level={0}
+
+            isConstant={true}
+            selected={selected}
+            onPayloadOpen={onPayloadOpen}
+            onPayloadClose={onPayloadClose}
+            icon={Star}
+          />
+
           {payloads && payloads.map(node => {
             return <TreeCollection
               key={`tree-node-${node.id}`}
@@ -164,7 +202,11 @@ export default function MainContent() {
       background="#080808"
       h="full"
     >
-      {getPayloadsQuery.isSuccess && <Captures />}
+      {
+        getPayloadsQuery.isSuccess &&
+        selected &&
+          <Captures payload={selected} />
+      }
     </Box>
   </Flex>
 }
