@@ -119,7 +119,7 @@ export function PayloadEdit({ payload }) {
         borderRadius={0}
         className="button-edit-payload"
         background={"transparent"}
-        display="none"
+        display="flex"
       >
         <Edit size={16} />
       </Button>

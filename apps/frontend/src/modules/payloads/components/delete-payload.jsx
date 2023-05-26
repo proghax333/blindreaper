@@ -98,7 +98,7 @@ export function PayloadDelete({ payload }) {
         borderRadius={0}
         className="button-delete-payload"
         background={"transparent"}
-        display="none"
+        display="flex"
       >
         <Delete size={16} />
       </Button>
