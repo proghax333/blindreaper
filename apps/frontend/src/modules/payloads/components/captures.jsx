@@ -125,7 +125,7 @@ function CaptureItem({ capture, handleCaptureItemClick, isActive = false }) {
         gap={2}
       >
         {fieldsList.map(field => {
-          return <InfoItem>
+          return <InfoItem key={`info-item-${id}-${field.path}`}>
             <Heading variant="small">{field.path}</Heading>
             <Divider my={1} />
             {
