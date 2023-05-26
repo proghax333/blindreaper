@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { Box, Flex, Divider, Text, useDisclosure } from "@chakra-ui/react";
 
-import { Star, KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, Edit, Delete } from "@emotion-icons/material";
+import { KeyboardArrowDown, ChevronRight, InsertDriveFile, Add } from "@emotion-icons/material";
 
 import ActionBarButton from "~/ui/ActionBarButton";
 
@@ -16,7 +16,15 @@ import { useMemoSortedCollection } from "~/modules/payloads/hooks/payloads.hooks
 import { NodeItem } from "~/modules/payloads/components/node-item";
 import { useNavigate, useParams } from "react-router-dom";
 
-function TreeCollection({ node: node_, level = 0, selected, onPayloadOpen, onPayloadClose, isConstant = false, icon }) {
+function TreeCollection({
+  node: node_,
+  level = 0,
+  selected,
+  onPayloadOpen,
+  onPayloadClose,
+  isConstant = false,
+  icon
+}) {
   const LEFT_ICON_SIZE = 18;
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -98,7 +106,6 @@ const nodeShowAll = {
 };
 
 export default function MainContent() {
-  // const { collections } = payloads;
   const { id } = useParams();
   const navigate = useNavigate();
   
@@ -110,22 +117,7 @@ export default function MainContent() {
     id: id || "root",
   };
 
-  // const [selected, setSelected] = React.useState(null);
-
-
-
-  // useEffect(() => {
-  //   if(payloads &&
-  //     selected &&
-  //     !payloads.find(payload => payload.id === selected.id)
-  //     && selected.id !== nodeShowAll.id
-  //   ) {
-  //     setSelected(null);
-  //   }
-  // }, [payloads, selected]);
-
   function onPayloadOpen(payload) {
-    // setSelected(payload);
     navigate(`/dashboard/payloads/${payload.id}`);
   }
   function onPayloadClose(payload) {
