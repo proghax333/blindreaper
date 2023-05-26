@@ -9,7 +9,7 @@ export default async function AuthRouterFactory(modules, config) {
     .get("/", AuthController["/"])
     .post("/register", AuthController["/register"])
     .post("/login", AuthController["/login"])
-    .get("/logout", AuthController["/logout"])
+    .post("/logout", AuthController["/logout"])
     .post("/forgot-password", AuthController["/forgot-password"])
     .post("/reset-password", AuthController["/reset-password"]);
   
