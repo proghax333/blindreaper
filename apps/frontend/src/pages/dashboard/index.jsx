@@ -3,7 +3,7 @@ import Header from "~/ui/Header";
 import HeadingLogo from "~/ui/HeadingLogo";
 import ActionBarButton from "~/ui/ActionBarButton";
 
-import { AccountCircle, CheckCircle, Extension, NoteAdd, Code, ArrowDropDown, KeyboardArrowDown, ChevronRight, InsertDriveFile, Add, CameraAlt } from "@emotion-icons/material";
+import { AccountCircle, CheckCircle, Extension, NoteAdd, Code, Logout } from "@emotion-icons/material";
 import { Settings, Notes, Note } from "@emotion-icons/material-outlined"
 import React, { useEffect } from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
@@ -23,7 +23,6 @@ export function Dashboard() {
     if (!isLoggedIn) {
       toast({
         title: "Not logged in!",
-        // description: "",
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -71,6 +70,9 @@ export function Dashboard() {
           </ActionBarButton>
           <ActionBarButton h="12" minH="12" as={Link} to="/dashboard/settings">
             <Settings size={"18"} />
+          </ActionBarButton>
+          <ActionBarButton h="12" minH="12" as={Link} to="/auth/logout">
+            <Logout size={"18"} />
           </ActionBarButton>
         </Flex>
       </Flex>

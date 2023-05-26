@@ -16,6 +16,7 @@ import Payloads from "~/pages/dashboard/payloads";
 import Settings from '~/pages/dashboard/settings';
 import ForgotPassword from '~/pages/forgot-password';
 import ResetPassword from '~/pages/reset-password';
+import Logout from '~/pages/auth/logout';
 
 function RootRouter() {
   return <BrowserRouter>
@@ -27,6 +28,7 @@ function RootRouter() {
       <Route path="auth">
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUp />} />
+        <Route path="logout" element={<Logout />} />
       </Route>
       
       <Route path="dashboard" element={<Dashboard />}>
