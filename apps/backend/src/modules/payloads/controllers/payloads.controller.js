@@ -52,6 +52,34 @@ export default async function PayloadsController({  }) {
         return next(HttpError(500, "Could not get payloads."));
       },
     ],
+    "/get_payload": [
+      isLoggedIn,
+      async (req, res, next) => {
+        const { id } = req.params;
+        try {
+          const result = await Payload.findOne({
+            _id: id,
+          });
+
+          if(result) {
+            return res.json(HttpData({
+              items: [{
+                domain: "payload",
+                message: "Payload fetched.",
+                data: {
+                  id: result.id,
+                  name: result.name,
+                  owner_id: result.owner_id,
+                  parent_id: result.parent_id,
+                }
+              }]
+            }));
+          }
+        } catch (e) { }
+
+        return next(HttpError(500, "Could not get payloads."));
+      }
+    ],
     "/create_payload": [
       isLoggedIn,
       async (req, res, next) => {
@@ -187,7 +215,13 @@ export default async function PayloadsController({  }) {
               },
               {
                 domain: "payload",
-                data: docs,
+                data: docs.map(doc => {
+                  return {
+                    id: doc.id,
+                    payload_id: doc.payload_id,
+                    data: doc.data,
+                  }
+                }),
               }
             ]
           }));
@@ -201,7 +235,8 @@ export default async function PayloadsController({  }) {
     "/create_capture": [
       async (req, res, next) => {
         const { id: payload_id } = req.params;
-        const { data } = req.body;
+        let { data } = req.body;
+        data = data || {};
 
         try {
           const capture = await Capture.create({
