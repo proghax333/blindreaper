@@ -18,40 +18,22 @@ const loginSchema = z.object({
   password: z.string().nonempty("Password must not be empty."),
 });
 
-function useLoginMutation(options = {}) {
-  const mutation = useMutation({
-    mutationFn: ({ login, password }) => handleResponse(
-      api.post("/auth/login", {
-        login,
-        password
-      })
-    )
-    , ...options,
-  });
-
-  return mutation;
-}
 
 export default function Login() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
   });
-  const { isLoggedIn, reload } = useAuth();
-  const loginMutation = useLoginMutation({
-    onSuccess: () => {
-      reload();
-    }
-  });
-
-  useEffect(() => {
-    if(isLoggedIn && loginMutation.isSuccess) {
-      navigate("/dashboard/payloads");
-    }
-  }, [isLoggedIn, loginMutation.isSuccess]);
+  const { isLoggedIn, reload, login, loginMutation } = useAuth();
 
   async function onSubmit(data) {
-    loginMutation.mutate(data);
+    try {
+      await login(data);
+      await reload()
+        .then(() => wait(2000))
+        .then(() => navigate("/dashboard/payloads"));
+      await loginMutation.reset();
+    } catch (e) { }
   }
 
   return <Box minHeight={"100vh"}>

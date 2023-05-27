@@ -1,5 +1,5 @@
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useMemo } from "react";
 import { handleResponse, api } from "~/lib/http";
 
@@ -19,14 +19,40 @@ function useAuthState() {
   });
 }
 
+function useLoginMutation(options = {}) {
+  const mutation = useMutation({
+    mutationFn: ({ login, password }) => handleResponse(
+      api.post("/auth/login", {
+        login,
+        password
+      })
+    )
+    , ...options,
+  });
+
+  return mutation;
+}
+
 export function AuthProvider({ children }) {
-  const { error, data, isLoading, isFetched } = useAuthState();
   const queryClient = useQueryClient();
+
+  const { error, data, isLoading, isFetched } = useAuthState();
+
+  const loginMutation = useLoginMutation({
+    onSuccess: () => {
+      reload();
+    }
+  });
 
   function reload() {
     return queryClient.invalidateQueries({
       queryKey: ["/account"]
     });
+  }
+
+  async function login(credentials) {
+    const result = await loginMutation.mutateAsync(credentials);
+    return result;
   }
 
   async function logout() {
@@ -44,8 +70,10 @@ export function AuthProvider({ children }) {
     isLoggedIn: false,
     user: null,
     reload,
+    login,
     logout,
     setData,
+    loginMutation,
   };
 
   if(data) {
