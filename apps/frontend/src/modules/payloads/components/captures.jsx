@@ -324,6 +324,11 @@ export default function Captures({ payload, ...props }) {
         overflowY="auto"
         overflowX="auto"
       >
+        {captures && captures.length === 0 &&
+          <Box px={8} py={4} >
+            <Text as={"i"}>No captures saved.</Text>
+          </Box>
+        }
         <CapturesList>
           {
             captures
