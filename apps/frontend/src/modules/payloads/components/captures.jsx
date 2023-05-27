@@ -1,9 +1,9 @@
 
-import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text, useDisclosure } from "@chakra-ui/react";
-import { ArrowDropDown, ArrowDropUp, Close, Search } from "@emotion-icons/material";
+import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text } from "@chakra-ui/react";
+import { ArrowDropDown, ArrowDropUp, Search } from "@emotion-icons/material";
 import styled from "@emotion/styled";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React from "react";
 import ReactPaginate from "react-paginate";
 import { useSearchParams } from "react-router-dom";
 import { API_BASE_URL, api, handleResponse } from "~/lib/http";
