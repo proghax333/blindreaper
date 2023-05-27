@@ -30,7 +30,6 @@ export default function Login() {
     try {
       await login(data);
       await reload()
-        .then(() => wait(2000))
         .then(() => navigate("/dashboard/payloads"));
       await loginMutation.reset();
     } catch (e) { }
