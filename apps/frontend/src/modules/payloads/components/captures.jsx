@@ -221,7 +221,6 @@ function usePagination() {
 }
 
 export default function Captures({ payload, ...props }) {
-  const [selectedCapture, setSelectedCapture] = React.useState(null);
   const queryClient = useQueryClient();
   const pagination = usePagination();
 
@@ -335,7 +334,6 @@ export default function Captures({ payload, ...props }) {
                   return <CaptureItem
                     key={`capture-item-${capture.id}`}
                     capture={capture}
-                    isActive={capture.id === selectedCapture?.id}
                   />
                 }
               )
