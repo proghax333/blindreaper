@@ -266,9 +266,6 @@ export default function Captures({ payload, ...props }) {
     }
   }
 
-  const pageRangeDisplayed = 2;
-  const pageCount = meta?.totalPages || 0;
-
   const capturesScrollableViewRef = React.useRef();
 
   return <Flex
@@ -341,8 +338,8 @@ export default function Captures({ payload, ...props }) {
         </CapturesList>
         {getCapturesQuery.isSuccess && <Flex>
           <CustomPaginate
-            pageCount={pageCount}
-            pageRangeDisplayed={pageRangeDisplayed}
+            pageCount={meta?.totalPages || 1}
+            pageRangeDisplayed={2}
             onPageChange={handlePageClick}
             activeClassName="active"
             forcePage={(meta?.page || 1) - 1}
