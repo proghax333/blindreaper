@@ -1,8 +1,11 @@
 
 import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { ArrowDropDown, ArrowDropUp, Close, Search } from "@emotion-icons/material";
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import styled from "@emotion/styled";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useEffect } from "react";
+import ReactPaginate from "react-paginate";
+import { useSearchParams } from "react-router-dom";
 import { API_BASE_URL, api, handleResponse } from "~/lib/http";
 
 // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -26,7 +29,7 @@ const fieldsMapping = fieldsList.reduce((result, field) => {
   return result;
 }, {});
 
-function CaptureItem({ capture, handleCaptureItemClick, isActive = false }) {
+function CaptureItem({ capture }) {
   const { data, id } = capture;
 
   const [itemVisible, setItemVisible] = React.useState(false);
@@ -92,7 +95,6 @@ function CaptureItem({ capture, handleCaptureItemClick, isActive = false }) {
           fontWeight={"bold"}
           fontSize={"lg"}
           fontFamily={"Montserrat"}
-          // onClick={() => handleCaptureItemClick(id)}
         >
           {Title}
         </Text>
@@ -158,44 +160,6 @@ function CapturesList({ ...props }) {
   />
 }
 
-function CaptureInfo({
-  data,
-  onClose
-}) {
-  return <Flex
-    flex={2}
-    flexDirection={"column"}
-    w="full"
-  >
-    <Flex
-      alignItems="center" 
-      p={4}
-      py={2}
-    >
-      <Text>
-        View capture
-      </Text>
-
-      <Button
-        onClick={onClose}
-        marginLeft={"auto"}
-        w={10}
-        h={10}
-        p={0}
-        borderRadius={"none"}
-        // background={"none"}
-      >
-        <Close size={14} />
-      </Button>
-    </Flex>
-
-    <Divider />
-
-    <Box>
-    </Box>
-  </Flex>
-}
-
 function useGetPayloadQuery({
   id,
   ...options
@@ -223,35 +187,43 @@ function useGetCapturesQuery({
     paginationOptions.limit = limit;
   }
 
+
   const params = new URLSearchParams(paginationOptions);
-  const paramString = params.size > 0 ? params.toString() : "";
+  const paramString = params.toString() ? "?" + params.toString() : "";
 
   return useQuery({
     queryKey: ["/payloads", id, page, limit],
-    queryFn: () => handleResponse(
-      api.get(`/payloads/${id}/captures${paramString}`)
+    queryFn: ({ signal }) => handleResponse(
+      api.get(`/payloads/${id}/captures${paramString}`, {
+        signal
+      })
     ),
     ...options,
   });
 }
 
+function usePagination() {
+  let [searchParams, setSearchParams] = useSearchParams();
+  const options = {
+    page: searchParams.get("page") || 1,
+    limit: searchParams.get("limit") || 5,
+  };
+
+  function getData() {
+    return options;
+  }
+
+  return {
+    ...options,
+    getData,
+    setData: setSearchParams,
+  }
+}
+
 export default function Captures({ payload, ...props }) {
   const [selectedCapture, setSelectedCapture] = React.useState(null);
-
-  function handleClose() {
-    setSelectedCapture(null);
-  }
-
-  function handleCaptureItemClick(id) {
-    setSelectedCapture(capture => {
-      if(capture.id === id) {
-        setSelectedCapture(null);
-        return null;
-      }
-    });
-  }
-
-  let page, limit;
+  const queryClient = useQueryClient();
+  const pagination = usePagination();
 
   const getPayloadQuery = useGetPayloadQuery({
     id: payload.id,
@@ -260,12 +232,45 @@ export default function Captures({ payload, ...props }) {
 
   const getCapturesQuery = useGetCapturesQuery({
     id: payload.id,
-    page,
-    limit,
+    page: pagination.page,
+    limit: pagination.limit,
+
+    onSuccess: (data) => {
+      if(capturesScrollableViewRef.current) {
+        capturesScrollableViewRef.current.scrollTo(0, 0);
+      }
+    }
   });
   const captures = getCapturesQuery.data?.itemByDomain("payload").data;
   const meta = getCapturesQuery.data?.itemByDomain("meta").data;
+
   const scriptLink = `${API_BASE_URL}/use/${payload.id}`;
+
+  function handlePageClick(page) {
+    const { selected } = page;
+
+    function changePage() {
+      pagination.setData((data) => ({
+        ...data,
+        page: selected + 1,
+      }))
+    }
+
+    if(getPayloadQuery.isFetching) {
+      queryClient.cancelQueries({
+        queryKey: ["/payloads", payload.id, pagination.page, pagination.limit],
+      }).then(() => {
+        changePage();
+      });
+    } else {
+      changePage();
+    }
+  }
+
+  const pageRangeDisplayed = 2;
+  const pageCount = meta?.totalPages || 0;
+
+  const capturesScrollableViewRef = React.useRef();
 
   return <Flex
     h="full"
@@ -317,6 +322,7 @@ export default function Captures({ payload, ...props }) {
 
     <Flex minH={0} h="full">
       <Flex
+        ref={capturesScrollableViewRef}
         flex={1}
         flexDirection={"column"}
         overflowY="auto"
@@ -330,26 +336,53 @@ export default function Captures({ payload, ...props }) {
                     key={`capture-item-${capture.id}`}
                     capture={capture}
                     isActive={capture.id === selectedCapture?.id}
-                    handleCaptureItemClick={handleCaptureItemClick}
                   />
                 }
               )
           }
         </CapturesList>
+        {getCapturesQuery.isSuccess && <Flex>
+          <CustomPaginate
+            pageCount={pageCount}
+            pageRangeDisplayed={pageRangeDisplayed}
+            onPageChange={handlePageClick}
+            activeClassName="active"
+            forcePage={(meta?.page || 1) - 1}
+          />
+        </Flex>}
       </Flex>
-
-      {/* <Divider orientation="vertical" /> */}
-{/* 
-      <Flex
-        flex={2}
-        flexDirection={"column"}
-        overflowY="auto"
-      >
-        {selectedCapture && <CaptureInfo
-          data={selectedCapture}
-          onClose={handleClose}
-        />}
-      </Flex> */}
     </Flex>
   </Flex>
 }
+
+const CustomPaginate = styled(ReactPaginate)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  list-style-type: none;
+  margin: 0.30rem 0 1rem 0;
+
+  li a {
+    padding: 0.5rem 1rem;
+    border: gray 1px solid;
+    cursor: pointer;
+  }
+  li.previous a,
+  li.next a,
+  li.break a {
+    border-color: transparent;
+  }
+  li.active a {
+    background-color: #0366d6;
+    border-color: transparent;
+    color: white;
+    min-width: 32px;
+  }
+  li.disabled a {
+    color: grey;
+  }
+  li.disable,
+  li.disabled a {
+    cursor: default;
+  }
+`;
