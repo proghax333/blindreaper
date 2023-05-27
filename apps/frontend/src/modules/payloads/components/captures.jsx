@@ -140,63 +140,6 @@ function CaptureItem({ capture, handleCaptureItemClick, isActive = false }) {
   </Flex>;
 }
 
-/*
-        <InfoItem>
-          <Heading variant="small">Location</Heading>
-          <Divider my={1}/>
-
-          <Code w="full" p={2}>https://www.google.com</Code>
-        </InfoItem>
-        <InfoItem>
-          <Heading variant="small">IP Address</Heading>
-          <Divider my={1}/>
-
-          <Code w="full" p={2}>192.168.1.100</Code>
-        </InfoItem>
-        <InfoItem>
-          <Heading variant="small">Cookies</Heading>
-          <Divider my={1}/>
-
-          <Code w="full" p={2}>BASESESSID=123123;</Code>
-        </InfoItem>
-        <InfoItem
-          // bg="pink.200"
-        >
-          <Heading variant="small">HTML DOM</Heading>
-          <Divider my={1}/>
-
-          <Flex
-            overflowX="auto"
-          >
-            <Code
-              wordBreak={"break-word"}
-              whiteSpace={"pre-wrap"}
-              p={2}
-            >
-              {
-  `<html>
-  <head>
-    <title>Href Attribute Example</title>
-  </head>
-  <body>
-    <h1>Href Attribute Example</h1>
-    <p>
-      <a href="https://www.freecodecamp.org/contribute/">The freeCodeCamp Contribution Page</a> shows you how and where you can contribute to freeCodeCamp's community and growth.
-    </p>
-  </body>
-</html>`
-              }
-            </Code>
-          </Flex>
-        </InfoItem>
-        <InfoItem>
-          <Heading variant="small">Browser Time</Heading>
-          <Divider my={1}/>
-
-          <Code w="full" p={2}>{time.toString()}</Code>
-        </InfoItem>
-*/
-
 function InfoItem({ ...props }) {
   return <Box
     my={2}
