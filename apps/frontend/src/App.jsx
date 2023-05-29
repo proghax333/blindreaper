@@ -17,11 +17,13 @@ import Settings from '~/pages/dashboard/settings';
 import ForgotPassword from '~/pages/forgot-password';
 import ResetPassword from '~/pages/reset-password';
 import Logout from '~/pages/auth/logout';
+import PrivacyPolicy from '~/pages/privacy-policy';
 
 function RootRouter() {
   return <BrowserRouter>
     <Routes>
       <Route path="" element={<Index />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/forgot-password" element={<ForgotPassword />} /> 
       <Route path="/reset-password/:code" element={<ResetPassword />} /> 
       

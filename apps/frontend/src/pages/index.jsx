@@ -1,11 +1,6 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { useAuth } from "~/modules/auth/auth.context";
-import Header from "~/ui/Header";
-import HeadingLogo from "~/ui/HeadingLogo";
-
-import Navigation from "~/ui/Navigation";
-import NavigationItem from "~/ui/NavigationItem";
+import DefaultHomeNavigation from "~/ui/DefaultHomeNavigation";
 
 function StylishLink({ children, to = "/" }) {
   return <Button
@@ -22,21 +17,8 @@ function StylishLink({ children, to = "/" }) {
 }
 
 export default function Index() {
-  const { isLoggedIn } = useAuth();
-
   return <div>
-    <Header>
-      <HeadingLogo />
-
-      <Navigation>
-        <NavigationItem to="/">Home</NavigationItem>
-        <NavigationItem>Docs</NavigationItem>
-        <NavigationItem>About us</NavigationItem>
-        {/*<NavigationItem to="/auth/login">Login</NavigationItem>*/}
-        {isLoggedIn && <NavigationItem to="/dashboard/payloads">Dashboard</NavigationItem>}
-        {!isLoggedIn && <NavigationItem to="/auth/login">Login</NavigationItem>}
-      </Navigation>
-    </Header>
+    <DefaultHomeNavigation />
 
     <Box
       display={"flex"}
