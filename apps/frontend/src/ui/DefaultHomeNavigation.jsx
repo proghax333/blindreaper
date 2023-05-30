@@ -13,6 +13,7 @@ export default function DefaultHomeNavigation() {
     <Navigation>
       <NavigationItem to="/">Home</NavigationItem>
       <NavigationItem to="/privacy-policy">Privacy Policy</NavigationItem>
+      <NavigationItem to="/terms-and-conditions">T&C</NavigationItem>
       <NavigationItem>About us</NavigationItem>
       {/*<NavigationItem to="/auth/login">Login</NavigationItem>*/}
       {isLoggedIn && <NavigationItem to="/dashboard/payloads">Dashboard</NavigationItem>}
