@@ -2,7 +2,7 @@
 import LocalStrategy from "passport-local";
 import { HttpError, HttpData, HttpResponse, handleError } from "../../../lib/http.js";
 import { Account } from "../../account/models/account.model.js";
-import { AUTH_TYPE, Auth } from "../models/auth.model.js";
+import { AUTH_STATUS, AUTH_TYPE, Auth } from "../models/auth.model.js";
 
 import crypto from "crypto";
 
@@ -31,9 +31,13 @@ export default function AuthController({ env, passport, db, mail }) {
             });
 
             if(account) {
-              return cb(null, {
-                id: account._id,
-              });
+              if(auth.status === AUTH_STATUS.INITIAL) {
+                return cb(HttpError(401, "Account needs to be activated. You can visit the activation link from your e-mail account to activate it."));
+              } else {
+                return cb(null, {
+                  id: account._id,
+                });
+              }
             }
           } else {
             return cb(HttpError(401, "Invalid username/password entered."));
@@ -104,11 +108,30 @@ export default function AuthController({ env, passport, db, mail }) {
         return sendServerError();
       }
 
+      let code = crypto.randomBytes(32).toString("hex");
+
       await Account.create({
         name,
       })
         // Account created successfully
         .then(async createdAccount => {
+          const link = `${env.WEB_BASE_URL}/activate-account/${code}`;
+
+          let success = false;
+          for(let i = 0; i < 3; ++i) {
+            try {
+              await mail.sendMail({
+                from: "atmanandnagpure31@gmail.com",
+                to: email,
+                subject: "Account Activation | BlindReaper",
+                html: getAccountActivationPage(link),
+              });
+              success = true;
+              break;
+            } catch (e) {
+              // console.log("Mail error: ", e);
+            }
+          }
 
           await Auth.create({
             type: AUTH_TYPE.local,
@@ -116,14 +139,16 @@ export default function AuthController({ env, passport, db, mail }) {
             data: {
               email,
               password
-            }
+            },
+            activation_code: code,
+            status: AUTH_STATUS.INITIAL,
           })
             // Auth created successfully
             .then(async createdAuth => {
               return res.send(HttpData({
                 items: [{
                   domain: "auth",
-                  message: "Account created successfully!"
+                  message: "Account created successfully! To activate the account, click the activation link sent to your e-mail address."
                 }]
               }));
             })
@@ -138,8 +163,36 @@ export default function AuthController({ env, passport, db, mail }) {
         })
         // Account creation failed
         .catch(error => {
+          console.log(error);
             return sendServerError();
         })
+    },
+
+    "/activate-account": async (req, res, next) => {
+      const { code } = req.body;
+
+      try {
+        const auth = await Auth.findOne({
+          "activation_code": code,
+        });
+
+        if(!auth) {
+          throw HttpError(401, "Incorrect activation code.");
+        }
+
+        auth.activation_code = undefined;
+        auth.status = AUTH_STATUS.ACTIVE;
+        await auth.save();
+
+        return res.json(HttpData({
+          items: [{
+            domain: "auth",
+            message: "Account was activated successfully!",
+          }]
+        }));
+      } catch (e) {
+        handleError(next, e, "Could not activate the account.");
+      }
     },
 
     "/login": async (req, res, next) => {
@@ -204,7 +257,6 @@ export default function AuthController({ env, passport, db, mail }) {
       }
 
       try {
-        let success = false;
 
         let code = crypto.randomBytes(32).toString("hex");
 
@@ -223,7 +275,8 @@ export default function AuthController({ env, passport, db, mail }) {
         );
         
         const link = `${env.WEB_BASE_URL}/reset-password/${code}`;
-
+        
+        let success = false;
         for(let i = 0; i < 3; ++i) {
           try {
             await mail.sendMail({
@@ -290,6 +343,81 @@ export default function AuthController({ env, passport, db, mail }) {
     }
   };
 }
+
+
+function getAccountActivationPage(link) {
+  return `
+  <!doctype html>
+  <html lang="en-US">
+  
+  <head>
+      <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+      <title>Reset Password Email Template</title>
+      <meta name="description" content="Reset Password Email Template.">
+      <style type="text/css">
+          a:hover {text-decoration: underline !important;}
+      </style>
+  </head>
+  
+  <body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px; background-color: #f2f3f8;" leftmargin="0">
+      <!--100% body table-->
+      <table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#f2f3f8"
+          style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
+          <tr>
+              <td>
+                  <table style="background-color: #f2f3f8; max-width:670px;  margin:0 auto;" width="100%" border="0"
+                      align="center" cellpadding="0" cellspacing="0">
+                      <tr>
+                          <td style="height:80px;">&nbsp;</td>
+                      </tr>
+                      <tr>
+                          <td style="height:20px;">&nbsp;</td>
+                      </tr>
+                      <tr>
+                          <td>
+                              <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+                                  style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+                                  <tr>
+                                      <td style="height:40px;">&nbsp;</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="padding:0 35px;">
+                                          <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">Account activation</h1>
+                                          <span
+                                              style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                                          <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                                            To activate your account, click the following link:
+                                          </p>
+                                          <a href="${link}"
+                                              style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Activate the account</a>
+                                      </td>
+                                  </tr>
+                                  <tr>
+                                      <td style="height:40px;">&nbsp;</td>
+                                  </tr>
+                              </table>
+                          </td>
+                      <tr>
+                          <td style="height:20px;">&nbsp;</td>
+                      </tr>
+                      <tr>
+                          <td style="text-align:center;">
+                              <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>blindrepear.proghax333.co.in</strong></p>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td style="height:80px;">&nbsp;</td>
+                      </tr>
+                  </table>
+              </td>
+          </tr>
+      </table>
+      <!--/100% body table-->
+  </body>
+  
+  </html>`;
+}
+
 
 function getPasswordResetPage(link) {
   return `

@@ -3,11 +3,20 @@ POST http://localhost:5001/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@tewt.cwetweom",
+  "email": "atmanandacademics@gmail.com",
   "name": "Atmanand Nagpure",
-  "password": "somepassword"
+  "password": "changedpass"
 }
 
+
+###
+
+POST http://localhost:5001/auth/activate-account
+Content-Type: application/json
+
+{
+  "code": "2e1cf82bcf1dcc2fb1dea37b15e8a9347117b904ab462e811fbdafc0418b7217"
+}
 
 ###
 
