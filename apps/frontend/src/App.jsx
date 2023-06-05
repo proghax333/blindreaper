@@ -19,6 +19,7 @@ import ResetPassword from '~/pages/reset-password';
 import Logout from '~/pages/auth/logout';
 import PrivacyPolicy from '~/pages/privacy-policy';
 import TermsAndConditions from '~/pages/terms-and-conditions';
+import ActivateAccount from './pages/activate-account';
 
 function RootRouter() {
   return <BrowserRouter>
@@ -28,6 +29,7 @@ function RootRouter() {
       <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
       <Route path="/forgot-password" element={<ForgotPassword />} /> 
       <Route path="/reset-password/:code" element={<ResetPassword />} /> 
+      <Route path="/activate-account/:code" element={<ActivateAccount />} /> 
       
       <Route path="auth">
         <Route path="login" element={<Login />} />
