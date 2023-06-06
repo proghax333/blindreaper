@@ -124,6 +124,7 @@ async function main() {
           password: process.env.SECRET_COOKIE_PASSWORD || "this is just some development cookie password",
           cookieOptions: {
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
           },
         });
         app.use(session);
