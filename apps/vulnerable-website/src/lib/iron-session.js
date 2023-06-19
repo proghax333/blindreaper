@@ -51,7 +51,7 @@ export function addSessionManager(app) {
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      httpOnly: true,
+      httpOnly: false,
     },
   });
   app.use(session);

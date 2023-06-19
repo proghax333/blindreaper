@@ -202,6 +202,9 @@ export default async function PayloadsController({  }) {
           const options = {
             page,
             limit,
+            sort: {
+              _id: -1,
+            }
           };
 
           const result = await Capture.paginate(query, options);
