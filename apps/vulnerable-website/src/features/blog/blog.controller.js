@@ -10,8 +10,6 @@ export const authController = {
         .populate("author")
         .exec();
 
-      console.log(comments);
-
       return res.render("pages/index", {
         data: {
           comments,

@@ -11,7 +11,8 @@ import { AuthProvider } from '~/modules/auth/auth.context';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      networkMode: "always"
+      networkMode: "always",
+      enabled: false,
     },
     mutations: {
       networkMode: "always"
