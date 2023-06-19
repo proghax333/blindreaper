@@ -12,7 +12,6 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       networkMode: "always",
-      enabled: false,
     },
     mutations: {
       networkMode: "always"
