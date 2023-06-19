@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include("../partials/head") %>
+  <title>A Vulnerable Blog</title>
+</head>
+<body>
+  <main class="flex w-full justify-center">
+    <div class="w-full max-w-2xl">
+      <nav class="flex w-full flex-row items-center">
+        <div class="">
+          <h1 class="text-lg font-bold text-slate-50 bg-slate-900 font-mono uppercase tracking-tighter px-2">A vulnerable blog</h1>
+        </div>
+
+        <div class="ml-auto p-2">
+          <% if(!auth.user) { %>
+            <button onclick="window.location='/auth/clerk';" class="rounded-md bg-slate-100 p-2 px-8 font-semibold text-slate-900">Login</button>
+          <% } else {%>
+            <button onclick="window.location='/auth/logout';" class="rounded-md bg-slate-100 p-2 px-8 font-semibold text-slate-900">Logout</button>
+          <% } %>
+        </div>
+      </nav>
+
+
+      <!-- Post view -->
+      <div class="mt-4">
+        <!-- Post content -->
+        <div class="flex w-full flex-col gap-6">
+          <h1 class="font-serif text-4xl font-bold">Nihilism | Nothing Matters.</h1>
+
+          <div class="flex flex-col gap-6 text-slate-900 font-serif">
+            <p>Nihilism is the belief that all values are baseless and that nothing can be known or communicated. It is often associated with extreme pessimism and a radical skepticism that condemns existence. A true nihilist would believe in nothing, have no loyalties, and no purpose other than, perhaps, an impulse to destroy. While few philosophers would claim to be nihilists, nihilism is most often associated with Friedrich Nietzsche who argued that its corrosive effects would eventually destroy all moral, religious, and metaphysical convictions and precipitate the greatest crisis in human history. In the 20th century, nihilistic themes–epistemological failure, value destruction, and cosmic purposelessness–have preoccupied artists, social critics, and philosophers. Mid-century, for example, the existentialists helped popularize tenets of nihilism in their attempts to blunt its destructive potential. By the end of the century, existential despair as a response to nihilism gave way to an attitude of indifference, often associated with antifoundationalism.</p>
+          </div>
+        </div>
+
+        <!-- Post comments -->
+        <div class="my-8">
+          <h1 class="text-2xl font-bold font-serif">Comments</h2>
+
+          <% if (auth.user) { %>
+          <form action="/" method="POST">
+            <div class="my-2 flex gap-2">
+              <textarea name="comment" class="border border-slate-300 rounded-md w-full flex-1 p-2"></textarea>
+              <button type="submit" class="text-sm border-2 rounded-md px-3 bg-black text-green-500 font-bold h-12">Add Comment</button>
+            </div>
+          </form>
+          <% } %>
+
+          <!-- Comments list -->
+          <div class="mt-4 flex flex-col gap-4">
+            <% for(const comment of data.comments) { %>
+            <div class="border border-slate-300 rounded-lg p-4 flex gap-2">
+              <div class="text-sm w-full">
+                <div class="flex gap-2 items-center mb-2">
+                  <img src="<%- comment.author.picture %>" width="16" height="16" />
+                  <h3 class="font-bold text-sm"><%- comment.author.name %></h3>
+                </div>
+                <p><%- comment.content %></p>
+              </div>
+            </div>
+            <% } %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
