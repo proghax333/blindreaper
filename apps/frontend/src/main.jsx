@@ -12,9 +12,13 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       networkMode: "always",
+      refetchOnWindowFocus: "false",
+      refetchInterval: false,
     },
     mutations: {
-      networkMode: "always"
+      networkMode: "always",
+      refetchOnWindowFocus: "false",
+      refetchInterval: false,
     }
   }
 });
