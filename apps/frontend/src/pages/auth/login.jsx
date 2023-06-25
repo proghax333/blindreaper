@@ -18,20 +18,36 @@ const loginSchema = z.object({
   password: z.string().nonempty("Password must not be empty."),
 });
 
+function useLoginMutation(options = {}) {
+  const mutation = useMutation({
+    mutationFn: ({ login, password }) => handleResponse(
+      api.post("/auth/login", {
+        login,
+        password
+      })
+    )
+    , ...options,
+  });
+
+  return mutation;
+}
 
 export default function Login() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema)
   });
-  const { isLoggedIn, reload, login, loginMutation } = useAuth();
+  const { isLoggedIn, reload, login } = useAuth();
+
+  const loginMutation = useLoginMutation({
+    onSuccess: () => {
+      window.location = "/dashboard/payloads";
+    }
+  });
 
   async function onSubmit(data) {
     try {
-      await login(data);
-      await reload()
-        .then(() => navigate("/dashboard/payloads"));
-      await loginMutation.reset();
+      loginMutation.mutate(data);
     } catch (e) { }
   }
 

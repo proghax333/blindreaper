@@ -19,30 +19,11 @@ function useAuthState() {
   });
 }
 
-function useLoginMutation(options = {}) {
-  const mutation = useMutation({
-    mutationFn: ({ login, password }) => handleResponse(
-      api.post("/auth/login", {
-        login,
-        password
-      })
-    )
-    , ...options,
-  });
-
-  return mutation;
-}
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
 
   const { error, data, isLoading, isFetched } = useAuthState();
-
-  const loginMutation = useLoginMutation({
-    onSuccess: () => {
-      reload();
-    }
-  });
 
   function reload() {
     return queryClient.invalidateQueries({
@@ -73,7 +54,6 @@ export function AuthProvider({ children }) {
     login,
     logout,
     setData,
-    loginMutation,
   };
 
   if(data) {
