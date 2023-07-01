@@ -2,7 +2,7 @@
 import { isAuthenticated } from "../auth/auth.middleware.js";
 import { Comment } from "./blog.model.js";
 
-export const authController = {
+export const blogController = {
   "[get]/": [
     async (req, res, next) => {
       const comments = await Comment.find({})
@@ -17,7 +17,7 @@ export const authController = {
       });
     }
   ],
-  "[post]/": [
+  "[post]/comments/add": [
     isAuthenticated,
     async (req, res, next) => {
       const { comment } = req.body;
@@ -31,4 +31,22 @@ export const authController = {
       return res.redirect("/");
     }
   ],
+  "[post]/comments/delete": [
+    isAuthenticated,
+    async (req, res, next) => {
+      const { commentId } = req.body;
+
+      const comment = await Comment.findOne({
+        _id: commentId,
+      });
+
+      if(comment.author._id.toString() !== req.user.id) {
+        // handle error.
+      } else {
+        await comment.deleteOne();
+      }
+
+      return res.redirect("/");
+    }
+  ]
 };

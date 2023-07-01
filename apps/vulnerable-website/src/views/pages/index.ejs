@@ -12,10 +12,11 @@
           <h1 class="text-lg font-bold text-slate-50 bg-slate-900 font-mono uppercase tracking-tighter px-2">A vulnerable blog</h1>
         </div>
 
-        <div class="ml-auto p-2">
+        <div class="ml-auto p-2 flex flex-row gap-2 items-center">
           <% if(!auth.user) { %>
             <button onclick="window.location='/auth/clerk';" class="rounded-md bg-slate-100 p-2 px-8 font-semibold text-slate-900">Login</button>
-          <% } else {%>
+          <% } else { %>
+            <p class="text-sm"><%= auth.user.name %></p>
             <button onclick="window.location='/auth/logout';" class="rounded-md bg-slate-100 p-2 px-8 font-semibold text-slate-900">Logout</button>
           <% } %>
         </div>
@@ -38,7 +39,7 @@
           <h1 class="text-2xl font-bold font-serif">Comments</h2>
 
           <% if (auth.user) { %>
-          <form action="/" method="POST">
+          <form action="/comments/add" method="POST">
             <div class="my-2 flex gap-2">
               <textarea name="comment" class="border border-slate-300 rounded-md w-full flex-1 p-2"></textarea>
               <button type="submit" class="text-sm border-2 rounded-md px-3 bg-black text-green-500 font-bold h-12">Add Comment</button>
@@ -56,6 +57,12 @@
                   <h3 class="font-bold text-sm"><%- comment.author.name %></h3>
                 </div>
                 <p><%- comment.content %></p>
+                <% if(auth.user && auth.user.id === comment.author._id.toString()) { %>
+                  <form action="/comments/delete" method="POST">
+                    <input type="hidden" name="commentId" value="<%= comment._id.toString() %>" />
+                    <button type="submit" class="text-xs text-blue-700 underline">Delete</button>
+                  </form>
+                <% } %>
               </div>
             </div>
             <% } %>

@@ -15,6 +15,10 @@ const payloadSchema = new Schema({
   parent_id: {
     type: Schema.Types.ObjectId,
     ref: "Payload"
+  },
+  active: {
+    type: Boolean,
+    default: true,
   }
 });
 

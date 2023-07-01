@@ -36,12 +36,13 @@ export default async function PayloadsController({  }) {
               },
               {
                 domain: "payload",
-                data: docs.map(({ _id: id, name, owner_id, parent_id }) => {
+                data: docs.map(({ _id: id, name, owner_id, parent_id, active }) => {
                   return {
                     id,
                     name,
                     owner_id,
                     parent_id,
+                    active
                   }
                 }),
               }
@@ -71,6 +72,7 @@ export default async function PayloadsController({  }) {
                   name: result.name,
                   owner_id: result.owner_id,
                   parent_id: result.parent_id,
+                  active: result.active,
                 }
               }]
             }));
@@ -83,7 +85,7 @@ export default async function PayloadsController({  }) {
     "/create_payload": [
       isLoggedIn,
       async (req, res, next) => {
-        let { name, parent_id } = req.body;
+        let { name, parent_id, active } = req.body;
         let owner_id = req.user.id;
 
         parent_id = parent_id || null;
@@ -91,11 +93,17 @@ export default async function PayloadsController({  }) {
           parent_id = new ObjectId(parent_id);
         }
         
+        active = active || null;
+        if(active !== null) {
+          active = true;
+        }
+        
         try {
           const data = {
             name,
             parent_id,
             owner_id,
+            active,
           };
           const payload = await Payload.create(data);
 
@@ -120,7 +128,7 @@ export default async function PayloadsController({  }) {
       isLoggedIn,
       async (req, res, next) => {
         const { id } = req.params;
-        let { name } = req.body;
+        let { name, active } = req.body;
 
         try {
           const result = await Payload.findOneAndUpdate(
@@ -129,7 +137,8 @@ export default async function PayloadsController({  }) {
               owner_id: req.user.id,
             },
             {
-              name, 
+              name,
+              active
             },
             { new: true },
           );

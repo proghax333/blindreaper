@@ -1,8 +1,8 @@
 
-import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Code, Divider, Flex, Heading, Image, Input, InputGroup, InputLeftElement, Link, Stack, Switch, Text } from "@chakra-ui/react";
 import { ArrowDropDown, ArrowDropUp, Search } from "@emotion-icons/material";
 import styled from "@emotion/styled";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import ReactPaginate from "react-paginate";
 import { useSearchParams } from "react-router-dom";
@@ -268,6 +268,27 @@ export default function Captures({ payload, ...props }) {
 
   const capturesScrollableViewRef = React.useRef();
 
+  console.log('Payload: ', payload);
+
+  const updatePayloadMutation = useMutation({
+    mutationKey: ["/payloads", "update", payload.id],
+    mutationFn: (data) => handleResponse(
+      api.put(`/payloads/${payload.id}`, data)
+    ),
+    onSuccess: () => {
+      getPayloadQuery.refetch();
+    }
+  });
+
+  const handlePayloadToggle = (e) => {
+    const payloadEnabled = e.target.checked;
+    const data = {
+      active: payloadEnabled,
+    };
+
+    updatePayloadMutation.mutate(data);
+  };
+
   return <Flex
     h="full"
     flexDir={"column"}
@@ -286,7 +307,7 @@ export default function Captures({ payload, ...props }) {
         {
           payload.id === "root"
             ? <>
-                <Heading mt={4} fontSize={36}>Captures</Heading>
+                <Heading mt={4} fontSize={36}>Select a payload.</Heading>
               </>
             : <>
                 <Heading mt={4} fontSize={36}>{payload?.name}</Heading>
@@ -298,7 +319,13 @@ export default function Captures({ payload, ...props }) {
         }
       </Flex>
       <Box maxW={72} p={6}>
-        <form>
+        {
+          payload.id !== "root" && <Stack direction="row" alignItems="center">
+            <Text>Enable</Text>
+            <Switch disabled={updatePayloadMutation.isLoading} size="lg" isChecked={payload.active} onChange={handlePayloadToggle} />
+          </Stack>
+        }
+        {/* <form>
           <InputGroup>
             <InputLeftElement
               pointerEvents='none'
@@ -310,7 +337,7 @@ export default function Captures({ payload, ...props }) {
               variant="filled"
             />
           </InputGroup>
-        </form>
+        </form> */}
       </Box>
     </Flex>
 
