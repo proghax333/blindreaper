@@ -24,7 +24,7 @@ function useActivateAccountMutation(options = {}) {
 export default function ActivateAccount() {
   const navigate = useNavigate();
   const { code } = useParams();
-  console.log("Reset code: ", code);
+  // console.log("Reset code: ", code);
 
   const activateAccountMutation = useActivateAccountMutation({
     onSuccess: () => {

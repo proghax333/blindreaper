@@ -268,7 +268,7 @@ export default function Captures({ payload, ...props }) {
 
   const capturesScrollableViewRef = React.useRef();
 
-  console.log('Payload: ', payload);
+  // console.log('Payload: ', payload);
 
   const updatePayloadMutation = useMutation({
     mutationKey: ["/payloads", "update", payload.id],

@@ -61,7 +61,7 @@ export function AuthProvider({ children }) {
     value.user = data.itemByDomain("account").data;
   }
 
-  console.log(value);
+  // console.log(value);
 
   return <AuthContext.Provider value={value}>
     {!isLoading && children}

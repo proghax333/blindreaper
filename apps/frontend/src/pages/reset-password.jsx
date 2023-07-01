@@ -39,7 +39,7 @@ export default function ResetPassword() {
     resolver: zodResolver(resetPasswordSchema)
   });
   const { code } = useParams();
-  console.log("Reset code: ", code);
+  // console.log("Reset code: ", code);
 
   const resetPasswordMutation = useResetPasswordMutation({
     onSuccess: () => {
