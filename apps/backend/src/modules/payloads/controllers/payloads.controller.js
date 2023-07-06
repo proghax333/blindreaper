@@ -93,10 +93,7 @@ export default async function PayloadsController({  }) {
           parent_id = new ObjectId(parent_id);
         }
         
-        active = active || null;
-        if(active !== null) {
-          active = true;
-        }
+        active = (active && true) || undefined;
         
         try {
           const data = {
