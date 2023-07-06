@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev:all": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\" \"npm run dev -w vulnerable-website\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workspaces": [
@@ -11,5 +12,8 @@
   ],
   "keywords": [],
   "author": "proghax333",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
 }
